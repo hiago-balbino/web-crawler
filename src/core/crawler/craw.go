@@ -1,14 +1,14 @@
 package crawler
 
-import "github.com/hiago-balbino/web-crawler/src/core/page"
+import "github.com/hiago-balbino/web-crawler/src/core/pager"
 
 // PageCrawler is a implementation to handle with web crawler
 type PageCrawler struct {
-	page.Pager
+	pager.Pager
 }
 
 // NewPageCrawler is a constructor to create a new instance of PageCrawler
-func NewPageCrawler(pager page.Pager) Crawler {
+func NewPageCrawler(pager pager.Pager) Crawler {
 	return PageCrawler{pager}
 }
 

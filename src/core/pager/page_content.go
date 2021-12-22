@@ -1,4 +1,4 @@
-package page
+package pager
 
 import (
 	"net/http"
@@ -6,6 +6,7 @@ import (
 )
 
 var once sync.Once
+var httpClient *http.Client
 
 // ContentPage is a structure with HTTP Client that will be instantiated once using package sync
 type ContentPage struct {
@@ -14,11 +15,10 @@ type ContentPage struct {
 
 // NewContentPage is a constructor to create a new instance of ContentPage
 func NewContentPage() Pager {
-	contentPage := ContentPage{}
 	once.Do(func() {
-		contentPage.httpClient = &http.Client{}
+		httpClient = &http.Client{}
 	})
-	return contentPage
+	return ContentPage{httpClient: httpClient}
 }
 
 // Get fetch the response body from the URI

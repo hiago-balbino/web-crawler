@@ -1,4 +1,4 @@
-package page
+package pager
 
 import "net/http"
 
