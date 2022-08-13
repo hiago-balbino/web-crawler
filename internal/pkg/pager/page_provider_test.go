@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestContentPage_Get(t *testing.T) {
+func TestPageProvider_Get(t *testing.T) {
 	testCases := []struct {
 		name          string
 		uri           string
@@ -26,7 +26,7 @@ func TestContentPage_Get(t *testing.T) {
 
 	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
-			response, err := NewContentPage().Get(test.uri)
+			response, err := NewPageProvider().Get(test.uri)
 
 			if test.isExpectedErr {
 				assert.NotNil(t, err)
