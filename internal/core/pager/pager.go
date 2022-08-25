@@ -1,9 +1,11 @@
 package pager
 
-import "net/http"
+import (
+	"golang.org/x/net/html"
+)
 
 // Pager is a abstraction to handle with pages
 type Pager interface {
-	// Get fetch the response body from the URI
-	Get(uri string) (*http.Response, error)
+	// GetNode fetch and parse response body to return HTML Node
+	GetNode(uri string) (*html.Node, error)
 }
