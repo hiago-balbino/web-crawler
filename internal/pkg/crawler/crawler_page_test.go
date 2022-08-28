@@ -1,133 +1,253 @@
 package crawler
 
 import (
+	"errors"
 	"testing"
 
+	"github.com/hiago-balbino/web-crawler/internal/pkg/pager"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/html"
 )
 
 func TestCrawlerPage_Craw(t *testing.T) {
+	testCases := map[string]func(*testing.T, *pager.PageProviderMock){
+		"should return error to GetNode from pager provider": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			depth := int32(1)
+			node := &html.Node{}
+			unknownErr := errors.New("unknown error")
+			pagerMock.On("GetNode", uri).Return(node, unknownErr)
 
-}
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
 
-func TestExtractAddresses(t *testing.T) {
-	testCases := []struct {
-		name          string
-		node          *html.Node
-		expectedLinks []string
-	}{
-		{
-			name: "should return link when have only one attribute",
-			node: &html.Node{
+			assert.EqualError(t, err, unknownErr.Error())
+			assert.Empty(t, links)
+		},
+		"should return empty when not found link tag attribute": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			depth := int32(1)
+			node := &html.Node{Type: html.ElementNode}
+			pagerMock.On("GetNode", uri).Return(node, nil)
+
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
+
+			assert.NoError(t, err)
+			assert.Empty(t, links)
+		},
+		"should return link when have only one attribute": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			internalUri := "https://internal-anyurl.com"
+			depth := int32(1)
+			node := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
-				Attr: []html.Attribute{{
-					Key: hrefProp,
-					Val: "https://google.com",
-				}},
-			},
-			expectedLinks: []string{"https://google.com"},
+				Attr: []html.Attribute{{Key: hrefProp, Val: internalUri}},
+			}
+			pagerMock.On("GetNode", uri).Return(node, nil)
+			pagerMock.On("GetNode", internalUri).Return(&html.Node{}, nil)
+
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
+
+			assert.NoError(t, err)
+			assert.ElementsMatch(t, []string{internalUri}, links)
 		},
-		{
-			name: "should return link when have more than one attribute",
-			node: &html.Node{
+		"should return only one link when have two attribute but the last is invalid": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			internalUri := "https://internal-anyurl.com"
+			depth := int32(1)
+			node := &html.Node{
+				Type: html.ElementNode,
+				Data: linkTag,
+				Attr: []html.Attribute{{Key: hrefProp, Val: internalUri}, {Key: "class", Val: "name"}},
+			}
+			pagerMock.On("GetNode", uri).Return(node, nil)
+			pagerMock.On("GetNode", internalUri).Return(&html.Node{}, nil)
+
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
+
+			assert.NoError(t, err)
+			assert.ElementsMatch(t, []string{internalUri}, links)
+		},
+		"should return links when have two valid attributes": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			internalUri := "https://internal-anyurl.com"
+			anotherInternalUri := "https://another-internal-anyurl.com"
+			depth := int32(1)
+			node := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
 				Attr: []html.Attribute{
-					{
-						Key: hrefProp,
-						Val: "https://google.com",
-					},
-					{
-						Key: hrefProp,
-						Val: "https://twitter.com",
-					},
+					{Key: hrefProp, Val: internalUri},
+					{Key: hrefProp, Val: anotherInternalUri},
 				},
-			},
-			expectedLinks: []string{"https://google.com", "https://twitter.com"},
+			}
+			pagerMock.On("GetNode", uri).Return(node, nil)
+			pagerMock.On("GetNode", internalUri).Return(&html.Node{}, nil)
+			pagerMock.On("GetNode", anotherInternalUri).Return(&html.Node{}, nil)
+
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
+
+			assert.NoError(t, err)
+			assert.ElementsMatch(t, []string{internalUri, anotherInternalUri}, links)
 		},
-		{
-			name: "should return only one link when have two attribute but the last is invalid",
-			node: &html.Node{
+		"should return links from parent and child node": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			internalUri := "https://internal-anyurl.com"
+			anotherInternalUri := "https://another-internal-anyurl.com"
+			depth := int32(1)
+			node := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
-				Attr: []html.Attribute{
-					{
-						Key: hrefProp,
-						Val: "https://google.com",
-					},
-					{
-						Key: "class",
-						Val: "name",
-					},
-				},
-			},
-			expectedLinks: []string{"https://google.com"},
-		},
-		{
-			name: "should return links from parent and child node",
-			node: &html.Node{
-				Type: html.ElementNode,
-				Data: linkTag,
-				Attr: []html.Attribute{
-					{
-						Key: hrefProp,
-						Val: "https://google.com",
-					},
-				},
+				Attr: []html.Attribute{{Key: hrefProp, Val: internalUri}},
 				FirstChild: &html.Node{
 					Type: html.ElementNode,
 					Data: linkTag,
-					Attr: []html.Attribute{
-						{
-							Key: hrefProp,
-							Val: "https://twitter.com",
-						},
-					},
+					Attr: []html.Attribute{{Key: hrefProp, Val: anotherInternalUri}},
 				},
-			},
-			expectedLinks: []string{"https://google.com", "https://twitter.com"},
+			}
+			pagerMock.On("GetNode", uri).Return(node, nil)
+			pagerMock.On("GetNode", internalUri).Return(&html.Node{}, nil)
+			pagerMock.On("GetNode", anotherInternalUri).Return(&html.Node{}, nil)
+
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
+
+			assert.NoError(t, err)
+			assert.ElementsMatch(t, []string{internalUri, anotherInternalUri}, links)
 		},
-		{
-			name: "should return links from parent and child node when first child also have next sibling",
-			node: &html.Node{
+		"should return links from parent and child node when first child also have next sibling": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			internalUri := "https://internal-anyurl.com"
+			anotherInternalUri := "https://another-internal-anyurl.com"
+			lastInternalUri := "https://last-internal-anyurl.com"
+			depth := int32(1)
+			node := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
-				Attr: []html.Attribute{
-					{
-						Key: hrefProp,
-						Val: "https://google.com",
-					},
-				},
+				Attr: []html.Attribute{{Key: hrefProp, Val: internalUri}},
 				FirstChild: &html.Node{
 					Type: html.ElementNode,
 					Data: linkTag,
-					Attr: []html.Attribute{
-						{
-							Key: hrefProp,
-							Val: "https://twitter.com",
-						},
-					},
+					Attr: []html.Attribute{{Key: hrefProp, Val: anotherInternalUri}},
 					NextSibling: &html.Node{
 						Type: html.ElementNode,
 						Data: linkTag,
-						Attr: []html.Attribute{
-							{
-								Key: hrefProp,
-								Val: "https://twitch.com",
-							},
-						},
+						Attr: []html.Attribute{{Key: hrefProp, Val: lastInternalUri}},
 					},
 				},
-			},
-			expectedLinks: []string{"https://google.com", "https://twitter.com", "https://twitch.com"},
+			}
+			pagerMock.On("GetNode", uri).Return(node, nil)
+			pagerMock.On("GetNode", internalUri).Return(&html.Node{}, nil)
+			pagerMock.On("GetNode", anotherInternalUri).Return(&html.Node{}, nil)
+			pagerMock.On("GetNode", lastInternalUri).Return(&html.Node{}, nil)
+
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
+
+			assert.NoError(t, err)
+			assert.ElementsMatch(t, []string{internalUri, anotherInternalUri, lastInternalUri}, links)
+		},
+		"should return links from parent and child node but will break when empty URIs": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			internalUri := "https://internal-anyurl.com"
+			anotherInternalUri := "https://another-internal-anyurl.com"
+			depth := int32(2)
+			node := &html.Node{
+				Type: html.ElementNode,
+				Data: linkTag,
+				Attr: []html.Attribute{{Key: hrefProp, Val: internalUri}},
+				FirstChild: &html.Node{
+					Type: html.ElementNode,
+					Data: linkTag,
+					Attr: []html.Attribute{{Key: hrefProp, Val: anotherInternalUri}},
+				},
+			}
+			pagerMock.On("GetNode", uri).Return(node, nil)
+			pagerMock.On("GetNode", internalUri).Return(&html.Node{}, nil)
+			pagerMock.On("GetNode", anotherInternalUri).Return(&html.Node{}, nil)
+
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
+
+			assert.NoError(t, err)
+			assert.ElementsMatch(t, []string{internalUri, anotherInternalUri}, links)
+		},
+		"should return links from first and second node and need to ignore the third node to respect depth": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			internalUri := "https://internal-anyurl.com"
+			anotherInternalUri := "https://another-internal-anyurl.com"
+			lastInternalUri := "https://last-internal-anyurl.com"
+			depth := int32(2)
+			firstNode := &html.Node{
+				Type: html.ElementNode,
+				Data: linkTag,
+				Attr: []html.Attribute{{Key: hrefProp, Val: internalUri}},
+			}
+			secondNode := &html.Node{
+				Type: html.ElementNode,
+				Data: linkTag,
+				Attr: []html.Attribute{{Key: hrefProp, Val: anotherInternalUri}},
+			}
+			thirdNode := &html.Node{
+				Type: html.ElementNode,
+				Data: linkTag,
+				Attr: []html.Attribute{{Key: hrefProp, Val: lastInternalUri}},
+			}
+			pagerMock.On("GetNode", uri).Return(firstNode, nil)
+			pagerMock.On("GetNode", internalUri).Return(secondNode, nil)
+			pagerMock.On("GetNode", anotherInternalUri).Return(thirdNode, nil)
+
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
+
+			assert.NoError(t, err)
+			assert.ElementsMatch(t, []string{internalUri, anotherInternalUri}, links)
+		},
+		"should return links from first and second node considering when node has more than one attributes and need to respect depth": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			internalUri := "https://internal-anyurl.com"
+			anotherInternalUri := "https://another-internal-anyurl.com"
+			subInternalUri := "https://sub-internal-anyurl.com"
+			lastInternalUri := "https://last-internal-anyurl.com"
+			depth := int32(2)
+			firstNode := &html.Node{
+				Type: html.ElementNode,
+				Data: linkTag,
+				Attr: []html.Attribute{{Key: hrefProp, Val: internalUri}},
+			}
+			secondNode := &html.Node{
+				Type: html.ElementNode,
+				Data: linkTag,
+				Attr: []html.Attribute{{Key: hrefProp, Val: anotherInternalUri}, {Key: hrefProp, Val: subInternalUri}},
+			}
+			thirdNode := &html.Node{
+				Type: html.ElementNode,
+				Data: linkTag,
+				Attr: []html.Attribute{{Key: hrefProp, Val: lastInternalUri}},
+			}
+			pagerMock.On("GetNode", uri).Return(firstNode, nil)
+			pagerMock.On("GetNode", internalUri).Return(secondNode, nil)
+			pagerMock.On("GetNode", anotherInternalUri).Return(thirdNode, nil)
+			pagerMock.On("GetNode", subInternalUri).Return(&html.Node{}, nil)
+
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
+
+			assert.NoError(t, err)
+			assert.ElementsMatch(t, []string{internalUri, anotherInternalUri, subInternalUri}, links)
 		},
 	}
 
-	for _, test := range testCases {
-		links := extractAddresses(nil, test.node)
+	for name, run := range testCases {
+		t.Run(name, func(t *testing.T) {
+			pagerMock := new(pager.PageProviderMock)
 
-		assert.ElementsMatch(t, test.expectedLinks, links)
+			run(t, pagerMock)
+		})
 	}
 }

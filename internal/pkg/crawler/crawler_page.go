@@ -1,6 +1,8 @@
 package crawler
 
 import (
+	"sync"
+
 	"github.com/hiago-balbino/web-crawler/internal/core/crawler"
 	"github.com/hiago-balbino/web-crawler/internal/core/pager"
 	"golang.org/x/net/html"
@@ -21,9 +23,54 @@ func NewCrawlerPage(pager pager.Pager) crawler.Crawler {
 	return CrawlerPage{provider: pager}
 }
 
-// Craw execute the call to craw pages
-func (p CrawlerPage) Craw(uri string) {
-	panic("implement me")
+// Craw execute the call to craw pages concurrently and will respect depth param
+func (p CrawlerPage) Craw(uri string, depth int32) ([]string, error) {
+	ch := make(chan *dataResult)
+	var fetched = make(map[string]bool)
+	links := make([]string, 0)
+
+	fetch := func(wg *sync.WaitGroup, uri string, depth int32) {
+		defer wg.Done()
+
+		node, err := p.provider.GetNode(uri)
+		uris := extractAddresses([]string{}, node)
+
+		ch <- &dataResult{uri, uris, err, depth}
+	}
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go fetch(&wg, uri, depth)
+	fetched[uri] = true
+
+	for fetching := 1; fetching > 0; fetching-- {
+		result := <-ch
+		if result.err != nil {
+			return nil, result.err
+		}
+
+		if len(result.uris) == 0 || result.depth <= 0 {
+			break
+		}
+
+		for _, uri := range result.uris {
+			if !fetched[uri] {
+				wg.Add(1)
+				go fetch(&wg, uri, result.depth-1)
+
+				fetched[uri] = true
+				links = append(links, uri)
+				fetching++
+			}
+		}
+	}
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	return links, nil
 }
 
 // extractAddresses recursively extracts the addresses of the HTML node
