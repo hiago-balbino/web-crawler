@@ -13,7 +13,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 	testCases := map[string]func(*testing.T, *pager.PageProviderMock){
 		"should return error to GetNode from pager provider": func(t *testing.T, pagerMock *pager.PageProviderMock) {
 			uri := "https://anyurl.com"
-			depth := int32(1)
+			depth := 1
 			node := &html.Node{}
 			unknownErr := errors.New("unknown error")
 			pagerMock.On("GetNode", uri).Return(node, unknownErr)
@@ -26,7 +26,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 		},
 		"should return empty when not found link tag attribute": func(t *testing.T, pagerMock *pager.PageProviderMock) {
 			uri := "https://anyurl.com"
-			depth := int32(1)
+			depth := 1
 			node := &html.Node{Type: html.ElementNode}
 			pagerMock.On("GetNode", uri).Return(node, nil)
 
@@ -39,7 +39,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 		"should return link when have only one attribute": func(t *testing.T, pagerMock *pager.PageProviderMock) {
 			uri := "https://anyurl.com"
 			internalUri := "https://internal-anyurl.com"
-			depth := int32(1)
+			depth := 1
 			node := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
@@ -57,7 +57,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 		"should return only one link when have two attribute but the last is invalid": func(t *testing.T, pagerMock *pager.PageProviderMock) {
 			uri := "https://anyurl.com"
 			internalUri := "https://internal-anyurl.com"
-			depth := int32(1)
+			depth := 1
 			node := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
@@ -76,7 +76,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			uri := "https://anyurl.com"
 			internalUri := "https://internal-anyurl.com"
 			anotherInternalUri := "https://another-internal-anyurl.com"
-			depth := int32(1)
+			depth := 1
 			node := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
@@ -99,7 +99,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			uri := "https://anyurl.com"
 			internalUri := "https://internal-anyurl.com"
 			anotherInternalUri := "https://another-internal-anyurl.com"
-			depth := int32(1)
+			depth := 1
 			node := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
@@ -125,7 +125,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			internalUri := "https://internal-anyurl.com"
 			anotherInternalUri := "https://another-internal-anyurl.com"
 			lastInternalUri := "https://last-internal-anyurl.com"
-			depth := int32(1)
+			depth := 1
 			node := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
@@ -156,7 +156,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			uri := "https://anyurl.com"
 			internalUri := "https://internal-anyurl.com"
 			anotherInternalUri := "https://another-internal-anyurl.com"
-			depth := int32(2)
+			depth := 2
 			node := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
@@ -182,7 +182,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			internalUri := "https://internal-anyurl.com"
 			anotherInternalUri := "https://another-internal-anyurl.com"
 			lastInternalUri := "https://last-internal-anyurl.com"
-			depth := int32(2)
+			depth := 2
 			firstNode := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
@@ -214,7 +214,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			anotherInternalUri := "https://another-internal-anyurl.com"
 			subInternalUri := "https://sub-internal-anyurl.com"
 			lastInternalUri := "https://last-internal-anyurl.com"
-			depth := int32(2)
+			depth := 2
 			firstNode := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,

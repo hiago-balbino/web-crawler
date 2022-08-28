@@ -24,43 +24,42 @@ func NewCrawlerPage(pager pager.Pager) crawler.Crawler {
 }
 
 // Craw execute the call to craw pages concurrently and will respect depth param
-func (p CrawlerPage) Craw(uri string, depth int32) ([]string, error) {
+func (p CrawlerPage) Craw(uri string, depth int) ([]string, error) {
 	ch := make(chan *dataResult)
-	var fetched = make(map[string]bool)
 	links := make([]string, 0)
+	fetched := sync.Map{}
 
-	fetch := func(wg *sync.WaitGroup, uri string, depth int32) {
+	fetch := func(wg *sync.WaitGroup, uri string) {
 		defer wg.Done()
 
 		node, err := p.provider.GetNode(uri)
 		uris := extractAddresses([]string{}, node)
 
-		ch <- &dataResult{uri, uris, err, depth}
+		ch <- &dataResult{uri, uris, err}
 	}
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
-	go fetch(&wg, uri, depth)
-	fetched[uri] = true
+	go fetch(&wg, uri)
+	fetched.Store(uri, true)
 
-	for fetching := 1; fetching > 0; fetching-- {
+	for fetching := 1; fetching <= depth; fetching++ {
 		result := <-ch
 		if result.err != nil {
 			return nil, result.err
 		}
 
-		if len(result.uris) == 0 || result.depth <= 0 {
+		if len(result.uris) == 0 {
 			break
 		}
 
 		for _, uri := range result.uris {
-			if !fetched[uri] {
+			if _, found := fetched.Load(uri); !found {
 				wg.Add(1)
-				go fetch(&wg, uri, result.depth-1)
 
-				fetched[uri] = true
+				go fetch(&wg, uri)
+				fetched.Store(uri, true)
 				links = append(links, uri)
-				fetching++
 			}
 		}
 	}
