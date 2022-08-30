@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"regexp"
 	"sync"
 
 	"github.com/hiago-balbino/web-crawler/internal/core/crawler"
@@ -9,8 +10,9 @@ import (
 )
 
 const (
-	linkTag  = "a"
-	hrefProp = "href"
+	linkTag    = "a"
+	hrefProp   = "href"
+	patternURI = `((http|https):\/\/)`
 )
 
 // CrawlerPage is a implementation to handle with web crawler
@@ -74,9 +76,18 @@ func (p CrawlerPage) Craw(uri string, depth int) ([]string, error) {
 
 // extractAddresses recursively extracts the addresses of the HTML node
 func extractAddresses(links []string, node *html.Node) []string {
+	if node == nil {
+		return links
+	}
+
 	if node.Type == html.ElementNode && node.Data == linkTag {
+		compile, err := regexp.Compile(patternURI)
+		if err != nil {
+			return links
+		}
+
 		for _, attr := range node.Attr {
-			if attr.Key == hrefProp {
+			if attr.Key == hrefProp && compile.Match([]byte(attr.Val)) {
 				links = append(links, attr.Val)
 			}
 		}

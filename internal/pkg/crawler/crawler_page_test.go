@@ -24,6 +24,18 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			assert.EqualError(t, err, unknownErr.Error())
 			assert.Empty(t, links)
 		},
+		"should return empty when node is nil": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			depth := 1
+			var node *html.Node
+			pagerMock.On("GetNode", uri).Return(node, nil)
+
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
+
+			assert.NoError(t, err)
+			assert.Empty(t, links)
+		},
 		"should return empty when not found link tag attribute": func(t *testing.T, pagerMock *pager.PageProviderMock) {
 			uri := "https://anyurl.com"
 			depth := 1
@@ -54,7 +66,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			assert.NoError(t, err)
 			assert.ElementsMatch(t, []string{internalUri}, links)
 		},
-		"should return only one link when have two attribute but the last is invalid": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+		"should return only one link when have two attribute but the last item has invalid key property": func(t *testing.T, pagerMock *pager.PageProviderMock) {
 			uri := "https://anyurl.com"
 			internalUri := "https://internal-anyurl.com"
 			depth := 1
@@ -62,6 +74,24 @@ func TestCrawlerPage_Craw(t *testing.T) {
 				Type: html.ElementNode,
 				Data: linkTag,
 				Attr: []html.Attribute{{Key: hrefProp, Val: internalUri}, {Key: "class", Val: "name"}},
+			}
+			pagerMock.On("GetNode", uri).Return(node, nil)
+			pagerMock.On("GetNode", internalUri).Return(&html.Node{}, nil)
+
+			crawler := NewCrawlerPage(pagerMock)
+			links, err := crawler.Craw(uri, depth)
+
+			assert.NoError(t, err)
+			assert.ElementsMatch(t, []string{internalUri}, links)
+		},
+		"should return only one link when have two attribute but the last item has invalid val link property": func(t *testing.T, pagerMock *pager.PageProviderMock) {
+			uri := "https://anyurl.com"
+			internalUri := "https://internal-anyurl.com"
+			depth := 1
+			node := &html.Node{
+				Type: html.ElementNode,
+				Data: linkTag,
+				Attr: []html.Attribute{{Key: hrefProp, Val: internalUri}, {Key: hrefProp, Val: "index.html"}},
 			}
 			pagerMock.On("GetNode", uri).Return(node, nil)
 			pagerMock.On("GetNode", internalUri).Return(&html.Node{}, nil)
