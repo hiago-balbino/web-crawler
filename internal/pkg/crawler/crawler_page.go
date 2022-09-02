@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"sync"
 
+	"github.com/hiago-balbino/web-crawler/internal/core/crawler"
 	"github.com/hiago-balbino/web-crawler/internal/core/pager"
 	"golang.org/x/net/html"
 )
@@ -17,11 +18,12 @@ const (
 // CrawlerPage is a implementation to handle with web crawler
 type CrawlerPage struct {
 	provider pager.PagerService
+	database crawler.CrawlerDatabase
 }
 
 // NewCrawlerPage is a constructor to create a new instance of CrawlerPage
-func NewCrawlerPage(pager pager.PagerService) CrawlerPage {
-	return CrawlerPage{provider: pager}
+func NewCrawlerPage(pager pager.PagerService, database crawler.CrawlerDatabase) CrawlerPage {
+	return CrawlerPage{provider: pager, database: database}
 }
 
 // Craw execute the call to craw pages concurrently and will respect depth param
