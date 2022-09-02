@@ -9,7 +9,7 @@ import (
 	"gopkg.in/h2non/gock.v1"
 )
 
-func TestPageProvider_GetNode(t *testing.T) {
+func TestPagerProvider_GetNode(t *testing.T) {
 	testCases := []struct {
 		name          string
 		uri           string
@@ -49,7 +49,7 @@ func TestPageProvider_GetNode(t *testing.T) {
 			defer gock.Off()
 			httpClient := httpClientMock(test)
 
-			node, err := NewPageProvider(httpClient).GetNode(test.uri)
+			node, err := NewPagerProvider(httpClient).GetNode(test.uri)
 
 			if test.isExpectedErr {
 				assert.ErrorIs(t, err, test.expectedErr)
