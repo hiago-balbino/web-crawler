@@ -14,3 +14,6 @@
 # Directories
 .idea
 .vscode
+
+# Direnv
+.env
