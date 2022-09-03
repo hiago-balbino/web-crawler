@@ -1,4 +1,4 @@
-.PHONY: help vet tests mongo-up mongo-down docker-ps
+.PHONY: help vet tests lint fmt mongo-up mongo-down docker-ps
 
 ## help: show this help.
 help:
@@ -11,6 +11,14 @@ vet:
 ## tests: run all unit tests
 tests:
 	go test -race ./...
+
+## lint: run all linters configured
+lint:
+	golangci-lint run ./...	
+
+## fmt: run go formatter recursively on all files
+fmt:
+	gofmt -s -w .
 
 ## docker-ps: list all containers running
 docker-ps:

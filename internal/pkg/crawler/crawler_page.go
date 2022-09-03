@@ -15,18 +15,18 @@ const (
 	patternURI = `((http|https):\/\/)`
 )
 
-// CrawlerPage is a implementation to handle with web crawler
+// CrawlerPage is a implementation to handle with web crawler.
 type CrawlerPage struct {
 	provider pager.PagerService
 	database crawler.CrawlerDatabase
 }
 
-// NewCrawlerPage is a constructor to create a new instance of CrawlerPage
+// NewCrawlerPage is a constructor to create a new instance of CrawlerPage.
 func NewCrawlerPage(pager pager.PagerService, database crawler.CrawlerDatabase) CrawlerPage {
 	return CrawlerPage{provider: pager, database: database}
 }
 
-// Craw execute the call to craw pages concurrently and will respect depth param
+// Craw execute the call to craw pages concurrently and will respect depth param.
 func (p CrawlerPage) Craw(uri string, depth int) ([]string, error) {
 	ch := make(chan *dataResult)
 	links := make([]string, 0)
@@ -75,17 +75,14 @@ func (p CrawlerPage) Craw(uri string, depth int) ([]string, error) {
 	return links, nil
 }
 
-// extractAddresses recursively extracts the addresses of the HTML node
+// extractAddresses recursively extracts the addresses of the HTML node.
 func extractAddresses(links []string, node *html.Node) []string {
 	if node == nil {
 		return links
 	}
 
 	if node.Type == html.ElementNode && node.Data == linkTag {
-		compile, err := regexp.Compile(patternURI)
-		if err != nil {
-			return links
-		}
+		compile := regexp.MustCompile(patternURI)
 
 		for _, attr := range node.Attr {
 			if attr.Key == hrefProp && compile.Match([]byte(attr.Val)) {

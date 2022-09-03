@@ -72,7 +72,6 @@ func httpClientMock(
 		expectedErr   error
 	},
 ) *http.Client {
-
 	requestIntercept := gock.New(test.uri)
 	requestIntercept.Reply(test.statusCode)
 	requestIntercept.ReplyFunc(func(r *gock.Response) {

@@ -6,17 +6,17 @@ import (
 	"golang.org/x/net/html"
 )
 
-// PagerProvider is a structure with HTTP Client to handle with pages
+// PagerProvider is a structure with HTTP Client to handle with pages.
 type PagerProvider struct {
 	httpClient *http.Client
 }
 
-// NewPagerProvider is a constructor to create a new instance of PagerProvider
+// NewPagerProvider is a constructor to create a new instance of PagerProvider.
 func NewPagerProvider(httpClient *http.Client) PagerProvider {
 	return PagerProvider{httpClient: httpClient}
 }
 
-// GetNode fetch and parse response body to return HTML Node
+// GetNode fetch and parse response body to return HTML Node.
 func (c PagerProvider) GetNode(uri string) (*html.Node, error) {
 	response, err := c.httpClient.Get(uri)
 	defer func() {
