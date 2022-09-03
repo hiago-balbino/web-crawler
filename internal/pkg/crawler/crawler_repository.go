@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -15,7 +16,13 @@ type CrawlerRepository struct {
 
 // NewCrawlerRepository is a constructor to create a new instance of CrawlerRepository
 func NewCrawlerRepository(ctx context.Context) CrawlerRepository {
-	opts := options.Client().ApplyURI("")
+	username := viper.GetString("MONGODB_USERNAME")
+	password := viper.GetString("MONGODB_PASSWORD")
+	host := viper.GetString("MONGODB_HOST")
+	port := viper.GetString("MONGODB_PORT")
+	endpoint := fmt.Sprintf("mongodb://%s:%s@%s:%s", username, password, host, port)
+
+	opts := options.Client().ApplyURI(endpoint)
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		fmt.Println(err.Error())
