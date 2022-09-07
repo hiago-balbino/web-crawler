@@ -1,8 +1,13 @@
-.PHONY: help vet tests lint fmt mongo-up mongo-down docker-ps
+.PHONY: help setup vet tests lint fmt mongo-up mongo-down docker-ps
 
 ## help: show this help.
 help:
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
+
+## setup: run the command mod download and tidy from Go
+setup:
+	GO111MODULE=on go mod download
+	go mod tidy
 
 ## vet: run the command vet from Go
 vet:

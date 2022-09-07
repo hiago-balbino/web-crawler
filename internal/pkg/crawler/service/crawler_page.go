@@ -1,6 +1,8 @@
 package crawler
 
 import (
+	"context"
+	"log"
 	"regexp"
 	"sync"
 
@@ -27,9 +29,13 @@ func NewCrawlerPage(pager pager.PagerService, database crawler.CrawlerDatabase) 
 }
 
 // Craw execute the call to craw pages concurrently and will respect depth param.
-func (p CrawlerPage) Craw(uri string, depth int) ([]string, error) {
-	ch := make(chan *dataResult)
+func (p CrawlerPage) Craw(ctx context.Context, uri string, depth int) ([]string, error) {
+	if links, err := p.database.Find(ctx, uri, depth); err == nil && len(links) > 0 {
+		return links, nil
+	}
+
 	links := make([]string, 0)
+	ch := make(chan *dataResult)
 	fetched := sync.Map{}
 
 	fetch := func(wg *sync.WaitGroup, uri string) {
@@ -71,6 +77,10 @@ func (p CrawlerPage) Craw(uri string, depth int) ([]string, error) {
 		wg.Wait()
 		close(ch)
 	}()
+
+	if err := p.database.Insert(ctx, uri, depth, links); err != nil {
+		log.Default().Println(err.Error())
+	}
 
 	return links, nil
 }
