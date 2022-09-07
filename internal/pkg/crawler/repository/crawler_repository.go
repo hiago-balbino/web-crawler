@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -34,5 +35,16 @@ func NewCrawlerRepository(ctx context.Context) CrawlerRepository {
 
 // Find is a method to fetch links crawled from database.
 func (c CrawlerRepository) Find(ctx context.Context, uri string, depth int) ([]string, error) {
-	panic("not implemented")
+	databaseName := viper.GetString("MONGODB_DATABASE")
+	collectionName := viper.GetString("MONGODB_COLLECTION")
+	collection := c.client.Database(databaseName).Collection(collectionName)
+	filter := bson.D{{Key: "uri", Value: uri}, {Key: "depth", Value: depth}}
+
+	dataPage := dataPage{}
+	err := collection.FindOne(ctx, filter).Decode(&dataPage)
+	if err != nil {
+		return nil, err
+	}
+
+	return dataPage.URIs, nil
 }
