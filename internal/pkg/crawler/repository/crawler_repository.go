@@ -33,6 +33,6 @@ func NewCrawlerRepository(ctx context.Context) CrawlerRepository {
 }
 
 // Find is a method to fetch links crawled from database.
-func (c CrawlerRepository) Find(ctx context.Context, uri string) ([]string, error) {
+func (c CrawlerRepository) Find(ctx context.Context, uri string, depth int) ([]string, error) {
 	panic("not implemented")
 }

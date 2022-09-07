@@ -12,8 +12,8 @@ type CrawlerDatabaseMock struct {
 }
 
 // Find is a method to fetch links crawled from database.
-func (c *CrawlerDatabaseMock) Find(ctx context.Context, uri string) ([]string, error) {
-	args := c.Called(ctx, uri)
+func (c *CrawlerDatabaseMock) Find(ctx context.Context, uri string, depth int) ([]string, error) {
+	args := c.Called(ctx, uri, depth)
 
 	return args.Get(0).([]string), args.Error(1)
 }
