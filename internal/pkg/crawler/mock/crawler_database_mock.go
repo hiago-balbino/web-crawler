@@ -11,6 +11,13 @@ type CrawlerDatabaseMock struct {
 	mock.Mock
 }
 
+// Insert is a method to insert new page crawled on database.
+func (c *CrawlerDatabaseMock) Insert(ctx context.Context, uri string, depth int, uris []string) error {
+	args := c.Called(ctx, uri, depth, uris)
+
+	return args.Error(0)
+}
+
 // Find is a method to fetch links crawled from database.
 func (c *CrawlerDatabaseMock) Find(ctx context.Context, uri string, depth int) ([]string, error) {
 	args := c.Called(ctx, uri, depth)

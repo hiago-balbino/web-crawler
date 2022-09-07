@@ -33,18 +33,36 @@ func NewCrawlerRepository(ctx context.Context) CrawlerRepository {
 	return CrawlerRepository{client}
 }
 
+// Insert is a method to insert new page crawled on database.
+func (c CrawlerRepository) Insert(ctx context.Context, uri string, depth int, uris []string) error {
+	dataPage := dataPage{
+		URI:   uri,
+		Depth: depth,
+		URIs:  uris,
+	}
+	_, err := c.getCollection().InsertOne(ctx, dataPage)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Find is a method to fetch links crawled from database.
 func (c CrawlerRepository) Find(ctx context.Context, uri string, depth int) ([]string, error) {
-	databaseName := viper.GetString("MONGODB_DATABASE")
-	collectionName := viper.GetString("MONGODB_COLLECTION")
-	collection := c.client.Database(databaseName).Collection(collectionName)
 	filter := bson.D{{Key: "uri", Value: uri}, {Key: "depth", Value: depth}}
-
 	dataPage := dataPage{}
-	err := collection.FindOne(ctx, filter).Decode(&dataPage)
+	err := c.getCollection().FindOne(ctx, filter).Decode(&dataPage)
 	if err != nil {
 		return nil, err
 	}
 
 	return dataPage.URIs, nil
+}
+
+func (c CrawlerRepository) getCollection() *mongo.Collection {
+	databaseName := viper.GetString("MONGODB_DATABASE")
+	collectionName := viper.GetString("MONGODB_COLLECTION")
+
+	return c.client.Database(databaseName).Collection(collectionName)
 }
