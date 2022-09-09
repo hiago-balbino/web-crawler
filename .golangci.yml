@@ -22,7 +22,6 @@ linters:
     - exportloopref
     - forbidigo
     - gci
-    - gochecknoglobals
     - gochecknoinits
     - gocognit
     - goconst

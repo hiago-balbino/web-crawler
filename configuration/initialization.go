@@ -1,4 +1,4 @@
-package config
+package configuration
 
 import (
 	"github.com/spf13/viper"
@@ -9,5 +9,6 @@ func InitConfigurations() {
 	viper.AutomaticEnv()
 	_ = viper.ReadInConfig()
 
+	loggerConfigurations()
 	mongoConfigurations()
 }

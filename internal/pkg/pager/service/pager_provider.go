@@ -3,8 +3,11 @@ package pager
 import (
 	"net/http"
 
+	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
 	"golang.org/x/net/html"
 )
+
+var log = logger.GetLogger()
 
 // PagerProvider is a structure with HTTP Client to handle with pages.
 type PagerProvider struct {
@@ -25,11 +28,15 @@ func (c PagerProvider) GetNode(uri string) (*html.Node, error) {
 		}
 	}()
 	if err != nil {
+		log.Error("error to perform get request in provider")
+
 		return nil, err
 	}
 
 	node, err := html.Parse(response.Body)
 	if err != nil {
+		log.Error("error to parse response body to html")
+
 		return nil, err
 	}
 

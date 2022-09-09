@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+var log = logger.GetLogger()
 
 // CrawlerRepository is a repository to handle with persistence layer.
 type CrawlerRepository struct {
@@ -27,7 +30,7 @@ func NewCrawlerRepository(ctx context.Context) CrawlerRepository {
 	opts := options.Client().ApplyURI(endpoint)
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
-		panic(err.Error())
+		log.Error("error connecting to mongodb")
 	}
 
 	return CrawlerRepository{client}
@@ -42,6 +45,8 @@ func (c CrawlerRepository) Insert(ctx context.Context, uri string, depth int, ur
 	}
 	_, err := c.getCollection().InsertOne(ctx, dataPage)
 	if err != nil {
+		log.Error("error while inserting new data into collection")
+
 		return err
 	}
 
@@ -54,6 +59,8 @@ func (c CrawlerRepository) Find(ctx context.Context, uri string, depth int) ([]s
 	dataPage := dataPage{}
 	err := c.getCollection().FindOne(ctx, filter).Decode(&dataPage)
 	if err != nil {
+		log.Error("error while fetching data from collection")
+
 		return nil, err
 	}
 

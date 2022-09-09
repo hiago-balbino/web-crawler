@@ -2,14 +2,18 @@ package crawler
 
 import (
 	"context"
-	"log"
 	"regexp"
 	"sync"
 
 	"github.com/hiago-balbino/web-crawler/internal/core/crawler"
 	"github.com/hiago-balbino/web-crawler/internal/core/pager"
+	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"golang.org/x/net/html"
 )
+
+var log = logger.GetLogger()
 
 const (
 	linkTag    = "a"
@@ -31,6 +35,8 @@ func NewCrawlerPage(pager pager.PagerService, database crawler.CrawlerDatabase) 
 // Craw execute the call to craw pages concurrently and will respect depth param.
 func (p CrawlerPage) Craw(ctx context.Context, uri string, depth int) ([]string, error) {
 	if links, err := p.database.Find(ctx, uri, depth); err == nil && len(links) > 0 {
+		log.Info("returning data from database")
+
 		return links, nil
 	}
 
@@ -55,6 +61,8 @@ func (p CrawlerPage) Craw(ctx context.Context, uri string, depth int) ([]string,
 	for fetching := 1; fetching <= depth; fetching++ {
 		result := <-ch
 		if result.err != nil {
+			log.Error("error to get uri node", zap.Field{Type: zapcore.StringType, String: result.err.Error()})
+
 			return nil, result.err
 		}
 
@@ -79,7 +87,7 @@ func (p CrawlerPage) Craw(ctx context.Context, uri string, depth int) ([]string,
 	}()
 
 	if err := p.database.Insert(ctx, uri, depth, links); err != nil {
-		log.Default().Println(err.Error())
+		log.Error("error inserting data into database", zap.Field{Type: zapcore.StringType, String: err.Error()})
 	}
 
 	return links, nil
