@@ -1,4 +1,4 @@
-.PHONY: help setup vet tests cover lint fmt mongo-up mongo-down docker-ps
+.PHONY: help setup vet tests integration-tests cover lint fmt mongo-up mongo-down docker-ps
 
 ## help: show this help.
 help:
@@ -15,7 +15,11 @@ vet:
 
 ## tests: run all unit tests
 tests:
-	go test -race -coverprofile coverage.out ./...
+	go test -race -coverprofile coverage.out ./... -short=true -count=1
+
+## integration-tests: run all integration tests
+integration-tests:
+	go test -race ./... -run Integration -count=1
 
 ## cover: run the command tool cover to open coverage file as HTML
 cover: tests
