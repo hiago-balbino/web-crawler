@@ -26,6 +26,9 @@ func NewCrawlerRepository(ctx context.Context) CrawlerRepository {
 	host := viper.GetString("MONGODB_HOST")
 	port := viper.GetString("MONGODB_PORT")
 	endpoint := fmt.Sprintf("mongodb://%s:%s@%s", username, password, net.JoinHostPort(host, port))
+	if noUserInformation(username, password) {
+		endpoint = fmt.Sprintf("mongodb://%s", net.JoinHostPort(host, port))
+	}
 
 	opts := options.Client().ApplyURI(endpoint)
 	client, err := mongo.Connect(ctx, opts)
@@ -34,6 +37,10 @@ func NewCrawlerRepository(ctx context.Context) CrawlerRepository {
 	}
 
 	return CrawlerRepository{client}
+}
+
+func noUserInformation(username, password string) bool {
+	return username == "" && password == ""
 }
 
 // Insert is a method to insert new page crawled on database.
