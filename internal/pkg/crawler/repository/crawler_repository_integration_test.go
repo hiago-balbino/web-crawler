@@ -26,6 +26,8 @@ func TestRepositoryIntegrationSuite(t *testing.T) {
 }
 
 func (suite *RepositoryIntegrationTestSuite) SetupSuite() {
+	suite.defaultDBEnviroments()
+
 	ctx := context.Background()
 
 	req := testcontainers.ContainerRequest{
@@ -60,11 +62,36 @@ func (suite *RepositoryIntegrationTestSuite) TearDownSuite() {
 }
 
 func (suite *RepositoryIntegrationTestSuite) TestInsert() {
-	err := suite.repository.client.Ping(context.Background(), nil)
-	assert.NoError(suite.T(), err)
+	ctx := context.Background()
+	uri := "http://crawler.com"
+	depth := 1
+	uris := []string{"http://subcrawler.com"}
+
+	suite.Suite.T().Run("should return error to insert when invalid database name", func(t *testing.T) {
+		defer func() {
+			suite.defaultDBEnviroments()
+		}()
+		viper.Set("MONGODB_DATABASE", "")
+
+		repository := NewCrawlerRepository(ctx)
+		err := repository.Insert(ctx, uri, depth, uris)
+
+		assert.NotNil(suite.T(), err)
+	})
+
+	suite.Suite.T().Run("should insert data page with success", func(t *testing.T) {
+		err := suite.repository.Insert(ctx, uri, depth, uris)
+
+		assert.NoError(suite.T(), err)
+	})
 }
 
 func (suite *RepositoryIntegrationTestSuite) TestFind() {
 	err := suite.repository.client.Ping(context.Background(), nil)
 	assert.NoError(suite.T(), err)
+}
+
+func (suite *RepositoryIntegrationTestSuite) defaultDBEnviroments() {
+	viper.Set("MONGODB_DATABASE", "database_test")
+	viper.Set("MONGODB_COLLECTION", "collection_test")
 }
