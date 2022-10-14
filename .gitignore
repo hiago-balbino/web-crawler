@@ -15,6 +15,7 @@ coverage.out
 # Directories
 .idea
 .vscode
+.fleet
 
 # Direnv
 .env
