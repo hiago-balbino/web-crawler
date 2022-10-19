@@ -10,6 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var log = logger.GetLogger()
@@ -33,7 +35,7 @@ func NewCrawlerRepository(ctx context.Context) CrawlerRepository {
 	opts := options.Client().ApplyURI(endpoint)
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
-		log.Error("error connecting to mongodb")
+		log.Error("error connecting to mongodb", zap.Field{Type: zapcore.StringType, String: err.Error()})
 	}
 
 	return CrawlerRepository{client}
@@ -52,7 +54,7 @@ func (c CrawlerRepository) Insert(ctx context.Context, uri string, depth int, ur
 	}
 	_, err := c.getCollection().InsertOne(ctx, dataPage)
 	if err != nil {
-		log.Error("error while inserting new data into collection")
+		log.Error("error while inserting new data into collection", zap.Field{Type: zapcore.StringType, String: err.Error()})
 
 		return err
 	}
@@ -66,7 +68,7 @@ func (c CrawlerRepository) Find(ctx context.Context, uri string, depth int) ([]s
 	dataPage := dataPage{}
 	err := c.getCollection().FindOne(ctx, filter).Decode(&dataPage)
 	if err != nil {
-		log.Error("error while fetching data from collection")
+		log.Error("error while fetching data from collection", zap.Field{Type: zapcore.StringType, String: err.Error()})
 
 		return nil, err
 	}
