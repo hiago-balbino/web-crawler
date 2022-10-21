@@ -1,6 +1,6 @@
 package main
 
-import "github.com/hiago-balbino/web-crawler/internal/pkg/api"
+import "github.com/hiago-balbino/web-crawler/api"
 
 func main() {
 	server := api.NewServer()

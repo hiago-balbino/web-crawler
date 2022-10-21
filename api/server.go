@@ -2,15 +2,16 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hiago-balbino/web-crawler/configuration"
-	core "github.com/hiago-balbino/web-crawler/internal/core/crawler"
 	repo "github.com/hiago-balbino/web-crawler/internal/pkg/crawler/repository"
 	crawler "github.com/hiago-balbino/web-crawler/internal/pkg/crawler/service"
 	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
 	pager "github.com/hiago-balbino/web-crawler/internal/pkg/pager/service"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -19,31 +20,30 @@ var log = logger.GetLogger()
 
 // Server is an structure to support the API.
 type Server struct {
-	crawlerService core.CrawlerService
+	handler Handler
 }
 
 // NewServer create a new instante of Server structure.
 func NewServer() Server {
 	configuration.InitConfigurations()
-
-	ctx := context.Background()
-	httpClient := new(http.Client)
-	provider := pager.NewPagerProvider(httpClient)
-	database := repo.NewCrawlerRepository(ctx)
+	provider := pager.NewPagerProvider(new(http.Client))
+	database := repo.NewCrawlerRepository(context.Background())
 	service := crawler.NewCrawlerPage(provider, database)
+	handler := NewHandler(service)
 
-	return Server{crawlerService: service}
+	return Server{handler: handler}
 }
 
 // Start initialize the API.
 func (s Server) Start() {
-	router := gin.Default()
-	router.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "WORKING")
-	})
-
-	err := router.Run()
-	if err != nil {
+	if err := s.setupRoutes().Run(fmt.Sprintf(":%s", viper.GetString("PORT"))); err != nil {
 		log.Fatal("error while server starting", zap.Field{Type: zapcore.StringType, String: err.Error()})
 	}
+}
+
+func (s Server) setupRoutes() *gin.Engine {
+	router := gin.Default()
+	router.GET("/crawler", s.handler.getCrawledPage)
+
+	return router
 }

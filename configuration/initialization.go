@@ -9,6 +9,7 @@ func InitConfigurations() {
 	viper.AutomaticEnv()
 	_ = viper.ReadInConfig()
 
+	apiConfigurations()
 	loggerConfigurations()
 	mongoConfigurations()
 }
