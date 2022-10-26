@@ -65,7 +65,7 @@ func (suite *RepositoryIntegrationTestSuite) TearDownSuite() {
 func (suite *RepositoryIntegrationTestSuite) TestInsert() {
 	ctx := context.Background()
 	uri := "http://crawler.com"
-	depth := 1
+	depth := uint(1)
 	uris := []string{"http://subcrawler.com"}
 
 	suite.Suite.T().Run("should return error to insert when invalid database name", func(t *testing.T) {
@@ -90,7 +90,7 @@ func (suite *RepositoryIntegrationTestSuite) TestInsert() {
 func (suite *RepositoryIntegrationTestSuite) TestFind() {
 	ctx := context.Background()
 	uri := "http://crawler.com"
-	depth := 1
+	depth := uint(1)
 	uris := []string{"http://subcrawler.com"}
 
 	suite.Suite.T().Run("should return error to find URIs stored", func(t *testing.T) {

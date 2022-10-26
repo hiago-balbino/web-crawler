@@ -22,7 +22,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 
 	testCases := map[string]func(*testing.T, *pager.PagerServiceMock, *crawler.CrawlerDatabaseMock){
 		"should return error to GetNode from pager provider": func(t *testing.T, pagerMock *pager.PagerServiceMock, databaseMock *crawler.CrawlerDatabaseMock) {
-			depth := 1
+			depth := uint(1)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{}, unexpectedErr)
 			node := &html.Node{}
 			pagerMock.On("GetNode", URI).Return(node, unexpectedErr)
@@ -35,7 +35,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			assert.Empty(t, links)
 		},
 		"should return empty when node is nil": func(t *testing.T, pagerMock *pager.PagerServiceMock, databaseMock *crawler.CrawlerDatabaseMock) {
-			depth := 1
+			depth := uint(1)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{}, unexpectedErr)
 			var node *html.Node
 			pagerMock.On("GetNode", URI).Return(node, nil)
@@ -48,7 +48,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			assert.Empty(t, links)
 		},
 		"should return empty when not found link tag attribute": func(t *testing.T, pagerMock *pager.PagerServiceMock, databaseMock *crawler.CrawlerDatabaseMock) {
-			depth := 1
+			depth := uint(1)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{}, unexpectedErr)
 			node := &html.Node{Type: html.ElementNode}
 			pagerMock.On("GetNode", URI).Return(node, nil)
@@ -61,7 +61,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			assert.Empty(t, links)
 		},
 		"should return link fetched from provider when database returns error": func(t *testing.T, pagerMock *pager.PagerServiceMock, databaseMock *crawler.CrawlerDatabaseMock) {
-			depth := 1
+			depth := uint(1)
 			node := &html.Node{
 				Type: html.ElementNode,
 				Data: linkTag,
@@ -81,7 +81,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			assert.ElementsMatch(t, uris, links)
 		},
 		"should return link from database": func(t *testing.T, pagerMock *pager.PagerServiceMock, databaseMock *crawler.CrawlerDatabaseMock) {
-			depth := 1
+			depth := uint(1)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{internalURI}, nil)
 
 			crawler := NewCrawlerPage(pagerMock, databaseMock)
@@ -95,7 +95,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			assert.ElementsMatch(t, uris, links)
 		},
 		"should return link when have only one attribute": func(t *testing.T, pagerMock *pager.PagerServiceMock, databaseMock *crawler.CrawlerDatabaseMock) {
-			depth := 1
+			depth := uint(1)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{}, unexpectedErr)
 			node := &html.Node{
 				Type: html.ElementNode,
@@ -118,7 +118,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			pagerMock *pager.PagerServiceMock,
 			databaseMock *crawler.CrawlerDatabaseMock,
 		) {
-			depth := 1
+			depth := uint(1)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{}, unexpectedErr)
 			node := &html.Node{
 				Type: html.ElementNode,
@@ -141,7 +141,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			pagerMock *pager.PagerServiceMock,
 			databaseMock *crawler.CrawlerDatabaseMock,
 		) {
-			depth := 1
+			depth := uint(1)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{}, unexpectedErr)
 			node := &html.Node{
 				Type: html.ElementNode,
@@ -160,7 +160,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			assert.ElementsMatch(t, uris, links)
 		},
 		"should return links when have two valid attributes": func(t *testing.T, pagerMock *pager.PagerServiceMock, databaseMock *crawler.CrawlerDatabaseMock) {
-			depth := 1
+			depth := uint(1)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{}, unexpectedErr)
 			node := &html.Node{
 				Type: html.ElementNode,
@@ -187,7 +187,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			pagerMock *pager.PagerServiceMock,
 			databaseMock *crawler.CrawlerDatabaseMock,
 		) {
-			depth := 1
+			depth := uint(1)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{}, unexpectedErr)
 			node := &html.Node{
 				Type: html.ElementNode,
@@ -222,7 +222,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			pagerMock *pager.PagerServiceMock,
 			databaseMock *crawler.CrawlerDatabaseMock,
 		) {
-			depth := 2
+			depth := uint(2)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{}, unexpectedErr)
 			node := &html.Node{
 				Type: html.ElementNode,
@@ -251,7 +251,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			pagerMock *pager.PagerServiceMock,
 			databaseMock *crawler.CrawlerDatabaseMock,
 		) {
-			depth := 2
+			depth := uint(2)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{}, unexpectedErr)
 			firstNode := &html.Node{
 				Type: html.ElementNode,
@@ -285,7 +285,7 @@ func TestCrawlerPage_Craw(t *testing.T) {
 			pagerMock *pager.PagerServiceMock,
 			databaseMock *crawler.CrawlerDatabaseMock,
 		) {
-			depth := 2
+			depth := uint(2)
 			databaseMock.On("Find", ctx, URI, depth).Return([]string{}, unexpectedErr)
 			firstNode := &html.Node{
 				Type: html.ElementNode,

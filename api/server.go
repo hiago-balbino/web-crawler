@@ -36,7 +36,8 @@ func NewServer() Server {
 
 // Start initialize the API.
 func (s Server) Start() {
-	if err := s.setupRoutes().Run(fmt.Sprintf(":%s", viper.GetString("PORT"))); err != nil {
+	router := s.setupRoutes()
+	if err := router.Run(fmt.Sprintf(":%s", viper.GetString("PORT"))); err != nil {
 		log.Fatal("error while server starting", zap.Field{Type: zapcore.StringType, String: err.Error()})
 	}
 }

@@ -12,7 +12,7 @@ type CrawlerServiceMock struct {
 }
 
 // Craw execute the call to craw pages concurrently and will respect depth param.
-func (c *CrawlerServiceMock) Craw(ctx context.Context, uri string, depth int) ([]string, error) {
+func (c *CrawlerServiceMock) Craw(ctx context.Context, uri string, depth uint) ([]string, error) {
 	args := c.Called(ctx, uri, depth)
 
 	return args.Get(0).([]string), args.Error(1)

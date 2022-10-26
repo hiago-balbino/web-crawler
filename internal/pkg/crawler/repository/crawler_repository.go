@@ -46,7 +46,7 @@ func noUserInformation(username, password string) bool {
 }
 
 // Insert is a method to insert new page crawled on database.
-func (c CrawlerRepository) Insert(ctx context.Context, uri string, depth int, uris []string) error {
+func (c CrawlerRepository) Insert(ctx context.Context, uri string, depth uint, uris []string) error {
 	dataPage := dataPage{
 		URI:   uri,
 		Depth: depth,
@@ -63,7 +63,7 @@ func (c CrawlerRepository) Insert(ctx context.Context, uri string, depth int, ur
 }
 
 // Find is a method to fetch links crawled from database.
-func (c CrawlerRepository) Find(ctx context.Context, uri string, depth int) ([]string, error) {
+func (c CrawlerRepository) Find(ctx context.Context, uri string, depth uint) ([]string, error) {
 	filter := bson.D{{Key: "uri", Value: uri}, {Key: "depth", Value: depth}}
 	dataPage := dataPage{}
 	err := c.getCollection().FindOne(ctx, filter).Decode(&dataPage)

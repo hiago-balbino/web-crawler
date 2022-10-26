@@ -32,5 +32,17 @@ func (h Handler) getCrawledPage(c *gin.Context) {
 	if err := schema.validate(); err != nil {
 		log.Error("error validating parameters", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		c.JSON(http.StatusBadRequest, errMessage{err.Error()})
+
+		return
 	}
+
+	links, err := h.service.Craw(c.Request.Context(), schema.URI, schema.Depth)
+	if err != nil {
+		log.Error("error crawling page", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		c.JSON(http.StatusInternalServerError, errMessage{err.Error()})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, responseSchema{links})
 }

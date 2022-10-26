@@ -33,7 +33,7 @@ func NewCrawlerPage(pager pager.PagerService, database crawler.CrawlerDatabase) 
 }
 
 // Craw execute the call to craw pages concurrently and will respect depth param.
-func (p CrawlerPage) Craw(ctx context.Context, uri string, depth int) ([]string, error) {
+func (p CrawlerPage) Craw(ctx context.Context, uri string, depth uint) ([]string, error) {
 	if links, err := p.database.Find(ctx, uri, depth); err == nil && len(links) > 0 {
 		log.Info("returning data from database")
 
@@ -58,7 +58,7 @@ func (p CrawlerPage) Craw(ctx context.Context, uri string, depth int) ([]string,
 	go fetch(&wg, uri)
 	fetched.Store(uri, true)
 
-	for fetching := 1; fetching <= depth; fetching++ {
+	for fetching := uint(1); fetching <= depth; fetching++ {
 		result := <-ch
 		if result.err != nil {
 			log.Error("error to get uri node", zap.Field{Type: zapcore.StringType, String: result.err.Error()})
