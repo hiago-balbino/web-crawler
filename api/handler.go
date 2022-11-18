@@ -24,14 +24,14 @@ func (h Handler) getCrawledPage(c *gin.Context) {
 	var schema requestSchema
 	if err := c.BindQuery(&schema); err != nil {
 		log.Error("error binding query params", zap.Field{Type: zapcore.StringType, String: err.Error()})
-		c.JSON(http.StatusBadRequest, errMessage{err.Error()})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 
 		return
 	}
 
 	if err := schema.validate(); err != nil {
 		log.Error("error validating parameters", zap.Field{Type: zapcore.StringType, String: err.Error()})
-		c.JSON(http.StatusBadRequest, errMessage{err.Error()})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 
 		return
 	}
@@ -39,10 +39,20 @@ func (h Handler) getCrawledPage(c *gin.Context) {
 	links, err := h.service.Craw(c.Request.Context(), schema.URI, schema.Depth)
 	if err != nil {
 		log.Error("error crawling page", zap.Field{Type: zapcore.StringType, String: err.Error()})
-		c.JSON(http.StatusInternalServerError, errMessage{err.Error()})
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": err.Error()})
 
 		return
 	}
 
-	c.JSON(http.StatusOK, responseSchema{links})
+	c.HTML(http.StatusOK, "links.html", gin.H{"links": links})
+}
+
+// index is a function to return index HTML page.
+func (h Handler) index(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.html", nil)
+}
+
+// redirect is a function to redirect page to index.
+func (h Handler) redirect(c *gin.Context) {
+	c.Redirect(http.StatusPermanentRedirect, "index.html")
 }

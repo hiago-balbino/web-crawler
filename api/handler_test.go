@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -27,10 +26,8 @@ func TestGetCrawledPage(t *testing.T) {
 
 			runServerHTTPTest(request, response, nil)
 
-			expectedMessage, errMarshal := json.Marshal(errMessage{errEmptyURI.Error()})
-			assert.NoError(t, errMarshal)
-			assert.Equal(t, string(expectedMessage), response.Body.String())
 			assert.Equal(t, http.StatusBadRequest, response.Code)
+			assert.Contains(t, response.Body.String(), errEmptyURI.Error())
 		})
 		t.Run("when empty depth query param", func(t *testing.T) {
 			path := fmt.Sprintf("/crawler?uri=%s", givenURI)
@@ -40,10 +37,8 @@ func TestGetCrawledPage(t *testing.T) {
 
 			runServerHTTPTest(request, response, nil)
 
-			expectedMessage, errMarshal := json.Marshal(errMessage{errEmptyDepth.Error()})
-			assert.NoError(t, errMarshal)
-			assert.Equal(t, string(expectedMessage), response.Body.String())
 			assert.Equal(t, http.StatusBadRequest, response.Code)
+			assert.Contains(t, response.Body.String(), errEmptyDepth.Error())
 		})
 		t.Run("when negative depth query param", func(t *testing.T) {
 			path := fmt.Sprintf("/crawler?uri=%s&depth=%d", givenURI, -1)
@@ -53,8 +48,8 @@ func TestGetCrawledPage(t *testing.T) {
 
 			runServerHTTPTest(request, response, nil)
 
-			assert.Contains(t, response.Body.String(), `{"message":"strconv.ParseUint: parsing \"-1\": invalid syntax"}`)
 			assert.Equal(t, http.StatusBadRequest, response.Code)
+			assert.Contains(t, response.Body.String(), `strconv.ParseUint: parsing &#34;-1&#34;: invalid syntax`)
 		})
 	})
 
@@ -69,10 +64,8 @@ func TestGetCrawledPage(t *testing.T) {
 		crawlerService.On("Craw", context.Background(), givenURI, givenDepth).Return(make([]string, 0), unexpectedErr)
 		runServerHTTPTest(request, response, crawlerService)
 
-		expectedMessage, errMarshal := json.Marshal(errMessage{unexpectedErr.Error()})
-		assert.NoError(t, errMarshal)
-		assert.Equal(t, string(expectedMessage), response.Body.String())
 		assert.Equal(t, http.StatusInternalServerError, response.Code)
+		assert.Contains(t, response.Body.String(), unexpectedErr.Error())
 	})
 
 	t.Run("should return 2xx and links when page is successfully crawled", func(t *testing.T) {
@@ -86,16 +79,16 @@ func TestGetCrawledPage(t *testing.T) {
 		crawlerService.On("Craw", context.Background(), givenURI, givenDepth).Return(links, nil)
 		runServerHTTPTest(request, response, crawlerService)
 
-		expectedLinks, errMarshal := json.Marshal(responseSchema{links})
-		assert.NoError(t, errMarshal)
-		assert.Equal(t, string(expectedLinks), response.Body.String())
 		assert.Equal(t, http.StatusOK, response.Code)
+		assert.Contains(t, response.Body.String(), links[0])
+		assert.Contains(t, response.Body.String(), links[1])
+		assert.Contains(t, response.Body.String(), links[2])
 	})
 }
 
 func runServerHTTPTest(request *http.Request, response *httptest.ResponseRecorder, service crawler.CrawlerService) {
 	handler := NewHandler(service)
 	server := Server{handler: handler}
-	router := server.setupRoutes()
+	router := server.setupRoutes("../templates/*")
 	router.ServeHTTP(response, request)
 }

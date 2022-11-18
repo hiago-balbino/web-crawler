@@ -36,14 +36,19 @@ func NewServer() Server {
 
 // Start initialize the API.
 func (s Server) Start() {
-	router := s.setupRoutes()
+	router := s.setupRoutes("templates/*")
+
 	if err := router.Run(fmt.Sprintf(":%s", viper.GetString("PORT"))); err != nil {
 		log.Fatal("error while server starting", zap.Field{Type: zapcore.StringType, String: err.Error()})
 	}
 }
 
-func (s Server) setupRoutes() *gin.Engine {
+func (s Server) setupRoutes(templatePath string) *gin.Engine {
 	router := gin.Default()
+	router.LoadHTMLGlob(templatePath)
+
+	router.GET("/", s.handler.redirect)
+	router.GET("/index", s.handler.index)
 	router.GET("/crawler", s.handler.getCrawledPage)
 
 	return router
