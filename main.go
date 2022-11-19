@@ -1,8 +1,10 @@
 package main
 
-import "github.com/hiago-balbino/web-crawler/api"
+import "github.com/hiago-balbino/web-crawler/cmd"
 
 func main() {
-	server := api.NewServer()
-	server.Start()
+	err := cmd.Execute()
+	if err != nil {
+		panic(err)
+	}
 }

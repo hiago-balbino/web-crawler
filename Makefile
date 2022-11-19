@@ -1,4 +1,6 @@
-.PHONY: help setup vet tests integration-tests all-tests cover lint fmt mongo-up mongo-down docker-ps
+.PHONY: all help setup vet tests integration-tests all-tests cover lint fmt mongo-up mongo-down docker-ps build run clean
+
+APP_NAME=crawler
 
 ## help: show this help.
 help:
@@ -48,3 +50,18 @@ mongo-up:
 ## mongo-down: stop mongo container
 mongo-down:
 	docker-compose -f docker/docker-compose.yml down
+
+## build: create an executable of the application
+build:
+	go build -o ${APP_NAME} .
+
+## run: runs the API using the built binary
+run: build
+	./${APP_NAME} api
+
+## clean: runs the go clean command and removes the application binary
+clean:
+	go clean
+	rm ${APP_NAME}
+
+all: help
