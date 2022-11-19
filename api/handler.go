@@ -44,6 +44,12 @@ func (h Handler) getCrawledPage(c *gin.Context) {
 		return
 	}
 
+	if len(links) == 0 {
+		c.HTML(http.StatusOK, "empty_result.html", gin.H{"message": "The process did not return any valid results"})
+
+		return
+	}
+
 	c.HTML(http.StatusOK, "links.html", gin.H{"links": links})
 }
 

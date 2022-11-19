@@ -68,21 +68,32 @@ func TestGetCrawledPage(t *testing.T) {
 		assert.Contains(t, response.Body.String(), unexpectedErr.Error())
 	})
 
-	t.Run("should return 2xx and links when page is successfully crawled", func(t *testing.T) {
+	t.Run("should return 2xx", func(t *testing.T) {
 		path := fmt.Sprintf("/crawler?uri=%s&depth=%d", givenURI, givenDepth)
 		request, err := http.NewRequest(http.MethodGet, path, nil)
 		response := httptest.NewRecorder()
 		assert.NoError(t, err)
 
-		links := []string{"https://firstlink.com", "https://secondlink.com", "https://thirdlink.com"}
-		crawlerService := new(mock.CrawlerServiceMock)
-		crawlerService.On("Craw", context.Background(), givenURI, givenDepth).Return(links, nil)
-		runServerHTTPTest(request, response, crawlerService)
+		t.Run("when process did not return any results", func(t *testing.T) {
+			links := make([]string, 0)
+			crawlerService := new(mock.CrawlerServiceMock)
+			crawlerService.On("Craw", context.Background(), givenURI, givenDepth).Return(links, nil)
+			runServerHTTPTest(request, response, crawlerService)
 
-		assert.Equal(t, http.StatusOK, response.Code)
-		assert.Contains(t, response.Body.String(), links[0])
-		assert.Contains(t, response.Body.String(), links[1])
-		assert.Contains(t, response.Body.String(), links[2])
+			assert.Equal(t, http.StatusOK, response.Code)
+			assert.Contains(t, response.Body.String(), "The process did not return any valid results")
+		})
+		t.Run("when page is successfully crawled", func(t *testing.T) {
+			links := []string{"https://firstlink.com", "https://secondlink.com", "https://thirdlink.com"}
+			crawlerService := new(mock.CrawlerServiceMock)
+			crawlerService.On("Craw", context.Background(), givenURI, givenDepth).Return(links, nil)
+			runServerHTTPTest(request, response, crawlerService)
+
+			assert.Equal(t, http.StatusOK, response.Code)
+			assert.Contains(t, response.Body.String(), links[0])
+			assert.Contains(t, response.Body.String(), links[1])
+			assert.Contains(t, response.Body.String(), links[2])
+		})
 	})
 }
 
