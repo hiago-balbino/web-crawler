@@ -57,8 +57,3 @@ func (h Handler) getCrawledPage(c *gin.Context) {
 func (h Handler) index(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", nil)
 }
-
-// redirect is a function to redirect page to index.
-func (h Handler) redirect(c *gin.Context) {
-	c.Redirect(http.StatusPermanentRedirect, "index.html")
-}

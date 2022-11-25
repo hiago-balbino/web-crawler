@@ -97,6 +97,19 @@ func TestGetCrawledPage(t *testing.T) {
 	})
 }
 
+func TestIndex(t *testing.T) {
+	t.Run("should return 2xx when load index page", func(t *testing.T) {
+		path := "/index"
+		request, err := http.NewRequest(http.MethodGet, path, nil)
+		response := httptest.NewRecorder()
+		assert.NoError(t, err)
+
+		runServerHTTPTest(request, response, nil)
+
+		assert.Equal(t, http.StatusOK, response.Code)
+	})
+}
+
 func runServerHTTPTest(request *http.Request, response *httptest.ResponseRecorder, service crawler.CrawlerService) {
 	handler := NewHandler(service)
 	server := Server{handler: handler}

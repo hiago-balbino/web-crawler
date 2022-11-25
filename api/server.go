@@ -47,7 +47,6 @@ func (s Server) setupRoutes(templatePath string) *gin.Engine {
 	router := gin.Default()
 	router.LoadHTMLGlob(templatePath)
 
-	router.GET("/", s.handler.redirect)
 	router.GET("/index", s.handler.index)
 	router.GET("/crawler", s.handler.getCrawledPage)
 
