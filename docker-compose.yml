@@ -2,6 +2,28 @@ version: '3.1'
 
 services:
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crawler-api
+    command:
+      - ${BINARY}
+      - ${COMMAND}
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL}
+      MONGODB_USERNAME: ${MONGODB_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_DATABASE: ${MONGODB_DATABASE}
+      MONGODB_COLLECTION: ${MONGODB_COLLECTION}
+      MONGODB_PORT: ${MONGODB_PORT}
+      MONGODB_HOST: ${MONGODB_HOST}
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - mongo
+      - mongo-express
+
   mongo:
     image: mongo
     container_name: mongodb

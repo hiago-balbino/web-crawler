@@ -1,4 +1,4 @@
-.PHONY: all help setup vet tests integration-tests all-tests cover lint fmt mongo-up mongo-down docker-ps build run clean
+.PHONY: all help setup vet tests integration-tests all-tests cover lint fmt compose-ps compose-up compose-down build build-run-api clean
 
 APP_NAME=crawler
 
@@ -10,6 +10,7 @@ help:
 setup:
 	GO111MODULE=on go mod download
 	go mod tidy
+	go mod verify
 
 ## vet: run the command vet from Go
 vet:
@@ -39,24 +40,24 @@ lint:
 fmt:
 	gofmt -s -w .
 
-## docker-ps: list all containers running
-docker-ps:
-	docker-compose -f docker/docker-compose.yml ps
+## compose-ps: list all containers running
+compose-ps:
+	docker-compose -f docker-compose.yml ps
 
-## mongo-up: start mongo container
-mongo-up:
-	docker-compose -f docker/docker-compose.yml up -d
+## compose-up: start API and dependencies
+compose-up:
+	docker-compose -f docker-compose.yml up -d
 
-## mongo-down: stop mongo container
-mongo-down:
-	docker-compose -f docker/docker-compose.yml down
+## compose-down: stop API and dependencies
+compose-down:
+	docker-compose -f docker-compose.yml down
 
 ## build: create an executable of the application
 build:
 	go build -o ${APP_NAME} .
 
-## run: runs the API using the built binary
-run: build
+## build-run-api: build project and run the API using the built binary
+build-run-api: build
 	./${APP_NAME} api
 
 ## clean: runs the go clean command and removes the application binary
