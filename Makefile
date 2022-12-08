@@ -1,4 +1,4 @@
-.PHONY: all help setup vet tests integration-tests all-tests cover lint sonarqube-up sonarqube-down sonarqube-analysis fmt compose-ps compose-up compose-down build build-run-api clean
+.PHONY: all help setup vet tests integration-tests all-tests cover lint sonarqube-up sonarqube-down sonarqube-analysis fmt compose-ps compose-up compose-down build build-run-api clean doc
 
 APP_NAME=crawler
 
@@ -72,9 +72,13 @@ build:
 build-run-api: build
 	./${APP_NAME} api
 
-## clean: runs the go clean command and removes the application binary
+## clean: run the go clean command and removes the application binary
 clean:
 	go clean
 	rm ${APP_NAME}
+
+## doc: run the project documentation using HTTP
+doc:
+	godoc -http=:6060
 
 all: help
