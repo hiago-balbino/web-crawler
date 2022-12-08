@@ -1,4 +1,4 @@
-.PHONY: all help setup vet tests integration-tests all-tests cover lint fmt compose-ps compose-up compose-down build build-run-api clean
+.PHONY: all help setup vet tests integration-tests all-tests cover lint sonarqube-up sonarqube-down sonarqube-analysis fmt compose-ps compose-up compose-down build build-run-api clean
 
 APP_NAME=crawler
 
@@ -35,6 +35,18 @@ cover: all-tests
 ## lint: run all linters configured
 lint:
 	golangci-lint run ./...	
+
+## sonarqube-up: start sonarqube container
+sonarqube-up:
+	docker run -d --name sonarqube -p ${SONAR_PORT}:${SONAR_PORT} sonarqube
+
+## sonarqube-down: stop sonarqube container
+sonarqube-down:
+	docker rm sonarqube -f
+
+## sonarqube-analysis: run sonar scanner
+sonarqube-analysis: all-tests
+	${SONAR_BINARY} -Dsonar.host.url=${SONAR_HOST} -Dsonar.login=${SONAR_LOGIN} -Dsonar.password=${SONAR_PASSWORD}
 
 ## fmt: run go formatter recursively on all files
 fmt:
