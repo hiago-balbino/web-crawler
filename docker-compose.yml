@@ -8,8 +8,8 @@ services:
       dockerfile: Dockerfile
     container_name: crawler-api
     command:
-      - ${BINARY}
-      - ${COMMAND}
+      - ./crawler
+      - api
     environment:
       LOG_LEVEL: ${LOG_LEVEL}
       MONGODB_USERNAME: ${MONGODB_USERNAME}
