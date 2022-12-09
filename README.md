@@ -1,3 +1,6 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/hiago-balbino/web-crawler.svg)](https://pkg.go.dev/github.com/hiago-balbino/web-crawler)
+[![Go Report Card](https://goreportcard.com/badge/github.com/hiago-balbino/web-crawler)](https://goreportcard.com/report/github.com/hiago-balbino/web-crawler)
+
 # WEB-CRAWLER
 This project was created for learning purposes and is a crawler that goes through the web looking for any information, clicking on every link available. 
 
