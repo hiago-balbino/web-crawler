@@ -8,6 +8,7 @@ import (
 	"github.com/hiago-balbino/web-crawler/internal/core/crawler"
 	"github.com/hiago-balbino/web-crawler/internal/core/pager"
 	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
+	"github.com/hiago-balbino/web-crawler/internal/pkg/metrics"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/net/html"
@@ -62,6 +63,7 @@ func (p CrawlerPage) Craw(ctx context.Context, uri string, depth uint) ([]string
 		result := <-ch
 		if result.err != nil {
 			log.Error("error to get uri node", zap.Field{Type: zapcore.StringType, String: result.err.Error()})
+			metrics.LinksErrorCounter.Inc()
 
 			return nil, result.err
 		}
@@ -71,6 +73,8 @@ func (p CrawlerPage) Craw(ctx context.Context, uri string, depth uint) ([]string
 		}
 
 		for _, uri := range result.uris {
+			metrics.LinksCounter.Inc()
+
 			if _, found := fetched.Load(uri); !found {
 				wg.Add(1)
 

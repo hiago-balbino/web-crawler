@@ -45,3 +45,24 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_EXPRESS_USERNAME}
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_EXPRESS_PASSWORD}
       ME_CONFIG_MONGODB_URL: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongo:${MONGODB_PORT}/
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - ${GRAFANA_PORT}:${GRAFANA_PORT}
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus-data:

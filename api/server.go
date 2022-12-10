@@ -11,6 +11,7 @@ import (
 	crawler "github.com/hiago-balbino/web-crawler/internal/pkg/crawler/service"
 	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
 	pager "github.com/hiago-balbino/web-crawler/internal/pkg/pager/service"
+	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -37,6 +38,10 @@ func NewServer() Server {
 // Start initialize the API.
 func (s Server) Start() {
 	router := s.setupRoutes("templates/*")
+
+	monitor := ginmetrics.GetMonitor()
+	monitor.SetMetricPath("/metrics")
+	monitor.Use(router)
 
 	if err := router.Run(fmt.Sprintf(":%s", viper.GetString("PORT"))); err != nil {
 		log.Fatal("error while server starting", zap.Field{Type: zapcore.StringType, String: err.Error()})
