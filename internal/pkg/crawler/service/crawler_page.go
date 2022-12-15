@@ -4,6 +4,7 @@ import (
 	"context"
 	"regexp"
 	"sync"
+	"time"
 
 	"github.com/hiago-balbino/web-crawler/internal/core/crawler"
 	"github.com/hiago-balbino/web-crawler/internal/core/pager"
@@ -35,6 +36,11 @@ func NewCrawlerPage(pager pager.PagerService, database crawler.CrawlerDatabase) 
 
 // Craw execute the call to craw pages concurrently and will respect depth param.
 func (p CrawlerPage) Craw(ctx context.Context, uri string, depth uint) ([]string, error) {
+	start := time.Now().UTC()
+	defer func() {
+		metrics.DeltaTimeToProcessLinks.Observe(time.Since(start).Seconds())
+	}()
+
 	if links, err := p.database.Find(ctx, uri, depth); err == nil && len(links) > 0 {
 		log.Info("returning data from database")
 
