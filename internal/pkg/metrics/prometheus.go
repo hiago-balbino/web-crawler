@@ -19,7 +19,7 @@ var (
 		Name: "crawler_links_error_count_total",
 		Help: "Count of links returned in error",
 	})
-	// DeltaTimeToProcessLinks is a metric used to measure the delta time to process the links
+	// DeltaTimeToProcessLinks is a metric used to measure the delta time to process the links.
 	DeltaTimeToProcessLinks = prometheus.NewHistogram(prometheus.HistogramOpts{
 		Name:    "crawler_delta_time_to_process_links",
 		Help:    "Delta time to process links",
