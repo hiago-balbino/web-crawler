@@ -1,3 +1,4 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hiago-balbino/web-crawler.svg)](https://pkg.go.dev/github.com/hiago-balbino/web-crawler)
 [![Go Report Card](https://goreportcard.com/badge/github.com/hiago-balbino/web-crawler)](https://goreportcard.com/report/github.com/hiago-balbino/web-crawler)
 
@@ -114,7 +115,7 @@ PROMETHEUS_PORT='9090'
 GRAFANA_PORT='3000'
 ```
 
-The application metrics are exposed using the [ginmetrics library](github.com/penglongli/gin-metrics/ginmetrics) and can be accessed at `http://localhost:8888/metrics`. These exposed metrics are collected by Prometheus and can be accessed at `http://localhost:9090`. 
+The application metrics are exposed using the [ginmetrics library](https://github.com/penglongli/gin-metrics) and can be accessed at `http://localhost:8888/metrics`. These exposed metrics are collected by Prometheus and can be accessed at `http://localhost:9090`. 
 
 The collected metrics are sent to Grafana and can be accessed at `http://localhost:3000`. The default credentials are `admin`/`admin`(Grafana may prompt you to reset the password, but it is optional). After that, you need to configure the `data source` by clicking on the `Configuration` option in the left hand panel and then clicking on `Data source`. Click on the `Add Data Source` button and select `Prometeus` under `Time Series Database`. Fill in the address in the HTTP option as in the image below:
 
