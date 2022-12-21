@@ -1,4 +1,4 @@
-.PHONY: all help setup vet tests integration-tests all-tests cover lint sonarqube-up sonarqube-down sonarqube-analysis fmt compose-ps compose-up compose-down build build-run-api clean doc
+.PHONY: all help setup vet lint vulncheck tests integration-tests all-tests cover sonarqube-up sonarqube-down sonarqube-analysis fmt compose-ps compose-up compose-down build build-run-api clean doc
 
 APP_NAME=crawler
 
@@ -16,6 +16,14 @@ setup:
 vet:
 	go vet ./...
 
+## lint: run all linters configured
+lint:
+	golangci-lint run ./...	
+
+## vulncheck: run all vulnerability checks
+vulncheck:
+	govulncheck ./...
+
 ## tests: run all unit tests
 tests:
 	go test -race -coverprofile coverage.out ./... -short=true -count=1
@@ -31,10 +39,6 @@ all-tests:
 ## cover: run the command tool cover to open coverage file as HTML
 cover: all-tests
 	go tool cover -html coverage.out
-
-## lint: run all linters configured
-lint:
-	golangci-lint run ./...	
 
 ## sonarqube-up: start sonarqube container
 sonarqube-up:

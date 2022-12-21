@@ -16,6 +16,7 @@ Some tools used do not represent the best choice, they were only used for learni
     * This is not mandatory but is a easily way to control your environment variable for each project without configuring the variables globally
 * [Golangci-lint](https://golangci-lint.run)
 * [Godoc](https://pkg.go.dev/golang.org/x/tools/cmd/godoc)
+* [Govulncheck](https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck)
 * [Viper](https://github.com/spf13/viper)
     * Configuration solution
 * [Cobra](https://github.com/spf13/cobra)
