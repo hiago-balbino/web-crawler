@@ -1,6 +1,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hiago-balbino/web-crawler.svg)](https://pkg.go.dev/github.com/hiago-balbino/web-crawler)
 [![Go Report Card](https://goreportcard.com/badge/github.com/hiago-balbino/web-crawler)](https://goreportcard.com/report/github.com/hiago-balbino/web-crawler)
+[![Linter](https://github.com/hiago-balbino/web-crawler/actions/workflows/linter.yml/badge.svg?branch=main&event=push&logo=github&style=flat-square)](https://github.com/hiago-balbino/web-crawler/actions/workflows/linter.yml)
+[![Security](https://github.com/hiago-balbino/web-crawler/actions/workflows/security.yml/badge.svg?branch=main&event=push&logo=github&style=flat-square)](https://github.com/hiago-balbino/web-crawler/actions/workflows/security.yml)
+[![Tests](https://github.com/hiago-balbino/web-crawler/actions/workflows/tests.yml/badge.svg?branch=main&event=push&logo=github&style=flat-square)](https://github.com/hiago-balbino/web-crawler/actions/workflows/tests.yml)
 
 # 🔍 WEB-CRAWLER
 This project was created for learning purposes and is a crawler that go through the web looking for any information by clicking on each available link. 
