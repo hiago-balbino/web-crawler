@@ -58,8 +58,8 @@ services:
     ports:
       - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
     volumes:
-      - ./prometheus:/etc/prometheus
-      - prometheus-data:/prometheus
+      - ./metrics/prometheus:/etc/prometheus
+      - prometheus-data:/metrics/prometheus
     command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
 
   grafana:
