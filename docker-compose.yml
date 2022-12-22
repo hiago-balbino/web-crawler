@@ -2,10 +2,20 @@ version: '3.1'
 
 services:
 
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile_nginx
+    container_name: nginx
+    ports:
+      - ${NGINX_PORT}:${NGINX_PORT}
+    depends_on:
+      - api
+
   api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_base
     container_name: crawler-api
     command:
       - ./crawler
@@ -17,9 +27,7 @@ services:
       MONGODB_DATABASE: ${MONGODB_DATABASE}
       MONGODB_COLLECTION: ${MONGODB_COLLECTION}
       MONGODB_PORT: ${MONGODB_PORT}
-      MONGODB_HOST: ${MONGODB_HOST}
-    ports:
-      - ${PORT}:${PORT}
+      MONGODB_HOST: mongo
     depends_on:
       - mongo
       - mongo-express
@@ -28,8 +36,6 @@ services:
     image: mongo
     container_name: mongodb
     restart: always
-    ports:
-      - ${MONGODB_PORT}:${MONGODB_PORT}
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}

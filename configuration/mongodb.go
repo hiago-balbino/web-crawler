@@ -3,10 +3,8 @@ package configuration
 import "github.com/spf13/viper"
 
 func mongoConfigurations() {
-	viper.SetDefault("MONGODB_USERNAME", "")
-	viper.SetDefault("MONGODB_PASSWORD", "")
-	viper.SetDefault("MONGODB_DATABASE", "")
-	viper.SetDefault("MONGODB_COLLECTION", "")
-	viper.SetDefault("MONGODB_PORT", "")
-	viper.SetDefault("MONGODB_HOST", "")
+	viper.SetDefault("MONGODB_DATABASE", "crawler")
+	viper.SetDefault("MONGODB_COLLECTION", "page")
+	viper.SetDefault("MONGODB_PORT", "27017")
+	viper.SetDefault("MONGODB_HOST", "localhost")
 }

@@ -43,7 +43,7 @@ func (s Server) Start() {
 	monitor.SetMetricPath("/metrics")
 	monitor.Use(router)
 
-	if err := router.Run(fmt.Sprintf(":%s", viper.GetString("PORT"))); err != nil {
+	if err := router.Run(fmt.Sprintf(":%s", viper.GetString("API_PORT"))); err != nil {
 		log.Fatal("error while server starting", zap.Field{Type: zapcore.StringType, String: err.Error()})
 	}
 }

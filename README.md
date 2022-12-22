@@ -14,6 +14,7 @@ Some tools used do not represent the best choice, they were only used for learni
 * [Go](https://golang.google.cn/dl) 1.19+
 * [Docker](https://www.docker.com/products/docker-desktop)
 * [Docker-compose](https://docs.docker.com/compose/install)
+* [Nginx](https://nginx.org)
 * [GNU make](https://www.gnu.org/software/make)
 * [Direnv](https://direnv.net)
     * This is not mandatory but is a easily way to control your environment variable for each project without configuring the variables globally
@@ -68,7 +69,7 @@ doc: run the project documentation using HTTP
 ## ⚙️ Running the Application
 To run the project locally you need to export some environment variables and this can be done using `direnv`. You can export the variables below.
 ```
-PORT='8888'
+NGINX_PORT='80'
 LOG_LEVEL='ERROR'
 
 MONGODB_USERNAME='root'
@@ -76,16 +77,23 @@ MONGODB_PASSWORD='example'
 MONGODB_DATABASE='crawler'
 MONGODB_COLLECTION='page'
 MONGODB_PORT='27017'
-MONGODB_HOST='mongo'
 
 MONGODB_EXPRESS_USERNAME='root'
 MONGODB_EXPRESS_PASSWORD='example'
 MONGODB_EXPRESS_PORT='8081'
 ```
 
-After exporting the environment variables, you can run the `make compose-up` command. If you want to run it outside of Docker, you can run the `make build-run-api` command and open the `http://localhost:8888/index` address.
+After exporting the environment variables, you can run the `make compose-up` command and open the `http://localhost/index` address. 
 
-If you want to debug the application, you need to export the `MONGODB_HOST` variable as `localhost`, comment out the `api` service in `docker-compose.yml` and run `make compose-up`. In your IDE you need to set the command to `api`, since the application is using [cobra library](https://github.com/spf13/cobra).
+If you want to run the API outside of Docker:
+* you need to export the `MONGODB_HOST` variable as `localhost`
+* expose the `MONGODB_PORT` in `docker-compose.yml` in the `mongo` service as below
+    ```
+    ports:
+      - ${MONGODB_PORT}:${MONGODB_PORT}
+    ```
+* comment out the `api` and `nginx` service in `docker-compose.yml` and run `make compose-up` and then `make build-run-api`, the API will run on the default port `http://localhost:8888/index`
+* if you want to debug the API, you don't need to run `make build-run-api` and in your IDE you need to set the command to `api` as the application is using [cobra library](https://github.com/spf13/cobra)
 
 ## 🏁 How to crawl the page
 Fill in the URI and Depth in the form(it will be used to limit the depth when fetching pages with so many links that they can underperform and can take so long).
