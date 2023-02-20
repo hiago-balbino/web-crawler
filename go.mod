@@ -1,6 +1,6 @@
 module github.com/hiago-balbino/web-crawler
 
-go 1.19
+go 1.20
 
 require (
 	github.com/gavv/httpexpect/v2 v2.6.1
