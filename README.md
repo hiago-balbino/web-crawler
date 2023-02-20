@@ -11,7 +11,7 @@ This project was created for learning purposes and is a crawler that go through 
 Some tools used do not represent the best choice, they were only used for learning purposes. For example MongoDB was used, but thinking about performance Redis might be a better alternative. The frontend was not the focus for learning purposes, so the `template package` was used.
 
 ## 🧰 Dependencies
-* [Go](https://golang.google.cn/dl) 1.19+
+* [Go](https://golang.google.cn/dl) 1.20+
 * [Docker](https://www.docker.com/products/docker-desktop)
 * [Docker-compose](https://docs.docker.com/compose/install)
 * [Nginx](https://nginx.org)
