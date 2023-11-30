@@ -37,7 +37,7 @@ func NewServer() Server {
 
 // Start initialize the API.
 func (s Server) Start() {
-	router := s.setupRoutes("templates/*")
+	router := s.setupRoutes("web/templates/*")
 
 	monitor := ginmetrics.GetMonitor()
 	monitor.SetMetricPath("/metrics")

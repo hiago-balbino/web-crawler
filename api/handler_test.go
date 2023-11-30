@@ -127,7 +127,7 @@ func TestIndex(t *testing.T) {
 func setupHandler(service crawler.CrawlerService) *gin.Engine {
 	handler := NewHandler(service)
 	server := Server{handler: handler}
-	router := server.setupRoutes("../templates/*")
+	router := server.setupRoutes("../web/templates/*")
 
 	return router
 }
