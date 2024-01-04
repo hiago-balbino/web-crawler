@@ -1,0 +1,7 @@
+0) running the application -ok
+1) update docker configuration files -ok
+2) review project structure
+3) review pkg names
+4) fix security issue
+5) review assets folder
+6) run deadcode tool
