@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hiago-balbino/web-crawler/configuration"
+	configuration "github.com/hiago-balbino/web-crawler/configs"
 	repo "github.com/hiago-balbino/web-crawler/internal/pkg/crawler/repository"
 	crawler "github.com/hiago-balbino/web-crawler/internal/pkg/crawler/service"
 	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"

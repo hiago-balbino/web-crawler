@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/hiago-balbino/web-crawler/configuration"
+	configuration "github.com/hiago-balbino/web-crawler/configs"
 	"github.com/spf13/cobra"
 )
 
