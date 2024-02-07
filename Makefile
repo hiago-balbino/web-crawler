@@ -1,4 +1,4 @@
-.PHONY: all help setup vet lint vulncheck tests integration-tests all-tests cover sonarqube-up sonarqube-down sonarqube-analysis fmt compose-ps compose-up compose-down build build-run-api clean doc
+.PHONY: all help setup vet lint deadcode vulncheck tests integration-tests all-tests cover sonarqube-up sonarqube-down sonarqube-analysis fmt compose-ps compose-up compose-down build build-run-api clean doc
 
 APP_NAME=crawler
 
@@ -19,6 +19,10 @@ vet:
 ## lint: run all linters configured
 lint:
 	golangci-lint run ./...	
+
+## deadcode: run command to look for deadcode
+deadcode:
+	deadcode .
 
 ## vulncheck: run all vulnerability checks
 vulncheck:
