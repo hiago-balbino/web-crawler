@@ -1,4 +1,4 @@
-package crawler
+package storage
 
 import (
 	"context"
@@ -16,13 +16,11 @@ import (
 
 var log = logger.GetLogger()
 
-// CrawlerRepository is a repository to handle with persistence layer.
-type CrawlerRepository struct {
+type CrawlerMongodbRepository struct {
 	client *mongo.Client
 }
 
-// NewCrawlerRepository is a constructor to create a new instance of CrawlerRepository.
-func NewCrawlerRepository(ctx context.Context) CrawlerRepository {
+func NewCrawlerMongodbRepository(ctx context.Context) CrawlerMongodbRepository {
 	username := viper.GetString("MONGODB_USERNAME")
 	password := viper.GetString("MONGODB_PASSWORD")
 	host := viper.GetString("MONGODB_HOST")
@@ -38,21 +36,20 @@ func NewCrawlerRepository(ctx context.Context) CrawlerRepository {
 		log.Error("error connecting to mongodb", zap.Field{Type: zapcore.StringType, String: err.Error()})
 	}
 
-	return CrawlerRepository{client}
+	return CrawlerMongodbRepository{client}
 }
 
 func noUserInformation(username, password string) bool {
 	return username == "" && password == ""
 }
 
-// Insert is a method to insert new page crawled on database.
-func (c CrawlerRepository) Insert(ctx context.Context, uri string, depth uint, uris []string) error {
-	dataPage := dataPage{
+func (c CrawlerMongodbRepository) Insert(ctx context.Context, uri string, depth uint, uris []string) error {
+	pageDataInfo := pageDataInfo{
 		URI:   uri,
 		Depth: depth,
 		URIs:  uris,
 	}
-	_, err := c.getCollection().InsertOne(ctx, dataPage)
+	_, err := c.getCollection().InsertOne(ctx, pageDataInfo)
 	if err != nil {
 		log.Error("error while inserting new data into collection", zap.Field{Type: zapcore.StringType, String: err.Error()})
 
@@ -62,21 +59,20 @@ func (c CrawlerRepository) Insert(ctx context.Context, uri string, depth uint, u
 	return nil
 }
 
-// Find is a method to fetch links crawled from database.
-func (c CrawlerRepository) Find(ctx context.Context, uri string, depth uint) ([]string, error) {
+func (c CrawlerMongodbRepository) Find(ctx context.Context, uri string, depth uint) ([]string, error) {
 	filter := bson.D{{Key: "uri", Value: uri}, {Key: "depth", Value: depth}}
-	dataPage := dataPage{}
-	err := c.getCollection().FindOne(ctx, filter).Decode(&dataPage)
+	pageDataInfo := pageDataInfo{}
+	err := c.getCollection().FindOne(ctx, filter).Decode(&pageDataInfo)
 	if err != nil {
 		log.Error("error while fetching data from collection", zap.Field{Type: zapcore.StringType, String: err.Error()})
 
 		return nil, err
 	}
 
-	return dataPage.URIs, nil
+	return pageDataInfo.URIs, nil
 }
 
-func (c CrawlerRepository) getCollection() *mongo.Collection {
+func (c CrawlerMongodbRepository) getCollection() *mongo.Collection {
 	databaseName := viper.GetString("MONGODB_DATABASE")
 	collectionName := viper.GetString("MONGODB_COLLECTION")
 

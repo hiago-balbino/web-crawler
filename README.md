@@ -131,8 +131,8 @@ The application metrics are exposed using the [ginmetrics library](https://githu
 
 The collected metrics are sent to Grafana and can be accessed at `http://localhost:3000`. The default credentials are `admin`/`admin`(Grafana may prompt you to reset the password, but it is optional). After that, you need to configure the `data source` by clicking on the `Configuration` option in the left hand panel and then clicking on `Data source`. Click on the `Add Data Source` button and select `Prometeus` under `Time Series Database`. Fill in the address in the HTTP option as in the image below:
 
-[![datasource](/metrics/docs/images/datasource.png)](/prometheus/docs/images/datasource.png)
+[![datasource](/metrics/assets/datasource.png)](/metrics/assets/datasource.png)
 
 After setting up the data source, you can import the file from the dashboard by clicking on the `Dashboard` option in the left side panel and then clicking `+ Import`. You can upload the file placed in this project at `/metrics/grafana/dashboards.json`. After it is loaded, you will see the panels as below:
 
-[![metrics](/metrics/docs/images/metrics.png)](/prometheus/docs/images/metrics.png)
+[![metrics](/metrics/assets/metrics.png)](/metrics/assets/metrics.png)

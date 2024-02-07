@@ -58,15 +58,15 @@ fmt:
 
 ## compose-ps: list all containers running
 compose-ps:
-	docker-compose -f docker-compose.yml ps
+	docker-compose -f build/docker-compose.yml ps
 
 ## compose-up: start API and dependencies
 compose-up:
-	docker-compose -f docker-compose.yml up -d
+	docker-compose -f build/docker-compose.yml up -d
 
 ## compose-down: stop API and dependencies
 compose-down:
-	docker-compose -f docker-compose.yml down
+	docker-compose -f build/docker-compose.yml down
 
 ## build: create an executable of the application
 build:

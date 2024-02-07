@@ -1,5 +1,6 @@
-##### Setup #####
-FROM golang:1.19-alpine as setup
+##### Setup
+
+FROM golang:1.21-alpine as setup
 RUN apk add git make
 
 WORKDIR /app
@@ -11,7 +12,8 @@ COPY go.sum .
 COPY Makefile .
 RUN make setup
 
-##### Builder #####
+##### Builder
+
 FROM setup as builder
 
 COPY . /app

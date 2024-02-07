@@ -1,4 +1,4 @@
-package crawler
+package storage
 
 import (
 	"context"
@@ -12,10 +12,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type RepositoryIntegrationTestSuite struct {
+type MongodbRepositoryIntegrationTestSuite struct {
 	suite.Suite
 	testcontainers.Container
-	repository CrawlerRepository
+	repository CrawlerMongodbRepository
 }
 
 func TestRepositoryIntegrationSuite(t *testing.T) {
@@ -23,10 +23,10 @@ func TestRepositoryIntegrationSuite(t *testing.T) {
 		t.Skip()
 	}
 
-	suite.Run(t, new(RepositoryIntegrationTestSuite))
+	suite.Run(t, new(MongodbRepositoryIntegrationTestSuite))
 }
 
-func (suite *RepositoryIntegrationTestSuite) SetupSuite() {
+func (suite *MongodbRepositoryIntegrationTestSuite) SetupSuite() {
 	suite.defaultDBEnviroments()
 
 	ctx := context.Background()
@@ -52,17 +52,17 @@ func (suite *RepositoryIntegrationTestSuite) SetupSuite() {
 	viper.Set("MONGODB_PORT", string(port))
 
 	suite.Container = container
-	suite.repository = NewCrawlerRepository(ctx)
+	suite.repository = NewCrawlerMongodbRepository(ctx)
 }
 
-func (suite *RepositoryIntegrationTestSuite) TearDownSuite() {
+func (suite *MongodbRepositoryIntegrationTestSuite) TearDownSuite() {
 	err := suite.Terminate(context.Background())
 	assert.NoError(suite.T(), err)
 
 	viper.Reset()
 }
 
-func (suite *RepositoryIntegrationTestSuite) TestInsert() {
+func (suite *MongodbRepositoryIntegrationTestSuite) TestInsert() {
 	ctx := context.Background()
 	uri := "http://crawler.com"
 	depth := uint(1)
@@ -74,7 +74,7 @@ func (suite *RepositoryIntegrationTestSuite) TestInsert() {
 		}()
 		viper.Set("MONGODB_DATABASE", "")
 
-		repository := NewCrawlerRepository(ctx)
+		repository := NewCrawlerMongodbRepository(ctx)
 		err := repository.Insert(ctx, uri, depth, uris)
 
 		assert.NotNil(suite.T(), err)
@@ -87,7 +87,7 @@ func (suite *RepositoryIntegrationTestSuite) TestInsert() {
 	})
 }
 
-func (suite *RepositoryIntegrationTestSuite) TestFind() {
+func (suite *MongodbRepositoryIntegrationTestSuite) TestFind() {
 	ctx := context.Background()
 	uri := "http://crawler.com"
 	depth := uint(1)
@@ -99,7 +99,7 @@ func (suite *RepositoryIntegrationTestSuite) TestFind() {
 		}()
 		viper.Set("MONGODB_DATABASE", "")
 
-		repository := NewCrawlerRepository(ctx)
+		repository := NewCrawlerMongodbRepository(ctx)
 		storedURIs, err := repository.Find(ctx, uri, depth)
 
 		assert.NotNil(suite.T(), err)
@@ -114,7 +114,7 @@ func (suite *RepositoryIntegrationTestSuite) TestFind() {
 	})
 
 	suite.Suite.T().Run("should return stored URIs with success", func(t *testing.T) {
-		dataPage := dataPage{URI: uri, Depth: depth, URIs: uris}
+		dataPage := pageDataInfo{URI: uri, Depth: depth, URIs: uris}
 		_, err := suite.repository.getCollection().InsertOne(ctx, dataPage)
 		assert.NoError(suite.T(), err)
 
@@ -125,7 +125,7 @@ func (suite *RepositoryIntegrationTestSuite) TestFind() {
 	})
 }
 
-func (suite *RepositoryIntegrationTestSuite) defaultDBEnviroments() {
+func (suite *MongodbRepositoryIntegrationTestSuite) defaultDBEnviroments() {
 	viper.Set("MONGODB_DATABASE", "database_test")
 	viper.Set("MONGODB_COLLECTION", "collection_test")
 }

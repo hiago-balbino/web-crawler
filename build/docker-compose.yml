@@ -1,11 +1,10 @@
-version: '3.1'
+version: "3.9"
 
 services:
-
   nginx:
     build:
-      context: .
-      dockerfile: Dockerfile_nginx
+      context: ../
+      dockerfile: build/Dockerfile_nginx
     container_name: nginx
     ports:
       - ${NGINX_PORT}:${NGINX_PORT}
@@ -14,8 +13,8 @@ services:
 
   api:
     build:
-      context: .
-      dockerfile: Dockerfile_base
+      context: ../
+      dockerfile: build/Dockerfile_base
     container_name: crawler-api
     command:
       - ./crawler
@@ -58,7 +57,7 @@ services:
     ports:
       - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
     volumes:
-      - ./metrics/prometheus:/etc/prometheus
+      - /metrics/prometheus:/etc/prometheus
       - prometheus-data:/metrics/prometheus
     command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
 
