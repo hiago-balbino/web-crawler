@@ -1,15 +1,15 @@
-package api
+package handler
 
-type requestSchema struct {
+type crawPageInfo struct {
 	URI   string `form:"uri"`
 	Depth uint   `form:"depth"`
 }
 
-func (rs requestSchema) validate() error {
+func (cp crawPageInfo) validate() error {
 	switch {
-	case rs.URI == "":
+	case cp.URI == "":
 		return errEmptyURI
-	case rs.Depth == 0:
+	case cp.Depth == 0:
 		return errEmptyDepth
 	default:
 		return nil

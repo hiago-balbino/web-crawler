@@ -1,4 +1,4 @@
-package api
+package handler
 
 import (
 	"net/http"
@@ -9,34 +9,31 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// Handler is an struct that contains service and functions to handle in API.
 type Handler struct {
-	service core.CrawlerService
+	service core.CrawlerUsecase
 }
 
-// NewHandler is a constructor to create a new instance of Handler.
-func NewHandler(service core.CrawlerService) Handler {
+func NewHandler(service core.CrawlerUsecase) Handler {
 	return Handler{service: service}
 }
 
-// getCrawledPage is a function to handle with crawled page.
-func (h Handler) getCrawledPage(c *gin.Context) {
-	var schema requestSchema
-	if err := c.BindQuery(&schema); err != nil {
+func (h Handler) getPageCrawled(c *gin.Context) {
+	var crawPageInfo crawPageInfo
+	if err := c.BindQuery(&crawPageInfo); err != nil {
 		log.Error("error binding query params", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 
 		return
 	}
 
-	if err := schema.validate(); err != nil {
+	if err := crawPageInfo.validate(); err != nil {
 		log.Error("error validating parameters", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 
 		return
 	}
 
-	links, err := h.service.Craw(c.Request.Context(), schema.URI, schema.Depth)
+	links, err := h.service.Craw(c.Request.Context(), crawPageInfo.URI, crawPageInfo.Depth)
 	if err != nil {
 		log.Error("error crawling page", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": err.Error()})
@@ -53,7 +50,6 @@ func (h Handler) getCrawledPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "links.html", gin.H{"links": links})
 }
 
-// index is a function to return index HTML page.
 func (h Handler) index(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", nil)
 }

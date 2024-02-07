@@ -1,4 +1,4 @@
-package api
+package handler
 
 import (
 	"context"
@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	configuration "github.com/hiago-balbino/web-crawler/configs"
-	repo "github.com/hiago-balbino/web-crawler/internal/pkg/crawler/repository"
-	crawler "github.com/hiago-balbino/web-crawler/internal/pkg/crawler/service"
+	"github.com/hiago-balbino/web-crawler/config"
+	"github.com/hiago-balbino/web-crawler/internal/core/crawler"
+	"github.com/hiago-balbino/web-crawler/internal/core/pager"
 	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
-	pager "github.com/hiago-balbino/web-crawler/internal/pkg/pager/service"
+	"github.com/hiago-balbino/web-crawler/internal/repository/storage"
 	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -19,23 +19,20 @@ import (
 
 var log = logger.GetLogger()
 
-// Server is an structure to support the API.
 type Server struct {
 	handler Handler
 }
 
-// NewServer create a new instante of Server structure.
 func NewServer() Server {
-	configuration.InitConfigurations()
-	provider := pager.NewPagerProvider(new(http.Client))
-	database := repo.NewCrawlerRepository(context.Background())
-	service := crawler.NewCrawlerPage(provider, database)
-	handler := NewHandler(service)
+	config.InitConfigurations()
+	pagerService := pager.NewPagerService(new(http.Client))
+	crawlerDatabase := storage.NewCrawlerMongodbRepository(context.Background())
+	crawlerService := crawler.NewCrawlerService(pagerService, crawlerDatabase)
+	handler := NewHandler(crawlerService)
 
 	return Server{handler: handler}
 }
 
-// Start initialize the API.
 func (s Server) Start() {
 	router := s.setupRoutes("web/templates/*")
 
@@ -53,7 +50,7 @@ func (s Server) setupRoutes(templatePath string) *gin.Engine {
 	router.LoadHTMLGlob(templatePath)
 
 	router.GET("/index", s.handler.index)
-	router.GET("/crawler", s.handler.getCrawledPage)
+	router.GET("/crawler", s.handler.getPageCrawled)
 
 	return router
 }

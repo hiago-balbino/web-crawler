@@ -1,4 +1,4 @@
-package api
+package handler
 
 import (
 	"errors"
@@ -9,11 +9,11 @@ import (
 	"github.com/gavv/httpexpect/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/hiago-balbino/web-crawler/internal/core/crawler"
-	mock "github.com/hiago-balbino/web-crawler/internal/pkg/crawler/mock"
-	tmock "github.com/stretchr/testify/mock"
+	"github.com/hiago-balbino/web-crawler/test/mocks"
+	"github.com/stretchr/testify/mock"
 )
 
-func TestGetCrawledPage(t *testing.T) {
+func TestGetPageCrawled(t *testing.T) {
 	givenDepth := uint(2)
 	givenURI := "https://anyuritest.com"
 
@@ -50,8 +50,8 @@ func TestGetCrawledPage(t *testing.T) {
 
 	t.Run("should return 5xx error when fail to perform HTTP request to fetch page", func(t *testing.T) {
 		unexpectedErr := errors.New("unexpected error")
-		crawlerService := new(mock.CrawlerServiceMock)
-		crawlerService.On("Craw", tmock.Anything, givenURI, givenDepth).Return(make([]string, 0), unexpectedErr)
+		crawlerService := new(mocks.CrawlerUsecaseMock)
+		crawlerService.On("Craw", mock.Anything, givenURI, givenDepth).Return(make([]string, 0), unexpectedErr)
 
 		handler := setupHandler(crawlerService)
 		server := httptest.NewServer(handler)
@@ -70,8 +70,8 @@ func TestGetCrawledPage(t *testing.T) {
 	t.Run("should return 2xx", func(t *testing.T) {
 		t.Run("when process did not return any results", func(t *testing.T) {
 			links := make([]string, 0)
-			crawlerService := new(mock.CrawlerServiceMock)
-			crawlerService.On("Craw", tmock.Anything, givenURI, givenDepth).Return(links, nil)
+			crawlerService := new(mocks.CrawlerUsecaseMock)
+			crawlerService.On("Craw", mock.Anything, givenURI, givenDepth).Return(links, nil)
 
 			handler := setupHandler(crawlerService)
 			server := httptest.NewServer(handler)
@@ -88,8 +88,8 @@ func TestGetCrawledPage(t *testing.T) {
 		})
 		t.Run("when page is successfully crawled", func(t *testing.T) {
 			links := []string{"https://firstlink.com", "https://secondlink.com", "https://thirdlink.com"}
-			crawlerService := new(mock.CrawlerServiceMock)
-			crawlerService.On("Craw", tmock.Anything, givenURI, givenDepth).Return(links, nil)
+			crawlerService := new(mocks.CrawlerUsecaseMock)
+			crawlerService.On("Craw", mock.Anything, givenURI, givenDepth).Return(links, nil)
 
 			handler := setupHandler(crawlerService)
 			server := httptest.NewServer(handler)
@@ -124,10 +124,10 @@ func TestIndex(t *testing.T) {
 	})
 }
 
-func setupHandler(service crawler.CrawlerService) *gin.Engine {
+func setupHandler(service crawler.CrawlerUsecase) *gin.Engine {
 	handler := NewHandler(service)
 	server := Server{handler: handler}
-	router := server.setupRoutes("../web/templates/*")
+	router := server.setupRoutes("../../web/templates/*")
 
 	return router
 }

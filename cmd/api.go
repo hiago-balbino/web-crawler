@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/hiago-balbino/web-crawler/api"
+	"github.com/hiago-balbino/web-crawler/internal/handler"
 	"github.com/spf13/cobra"
 )
 
@@ -9,7 +9,7 @@ var apiCmd = &cobra.Command{
 	Use:   "api",
 	Short: "A command to run the API",
 	Run: func(_ *cobra.Command, _ []string) {
-		server := api.NewServer()
+		server := handler.NewServer()
 		server.Start()
 	},
 }
