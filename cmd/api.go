@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/hiago-balbino/web-crawler/internal/handler"
+	"github.com/hiago-balbino/web-crawler/v2/internal/handler"
 	"github.com/spf13/cobra"
 )
 

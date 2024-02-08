@@ -8,8 +8,8 @@ import (
 
 	"github.com/gavv/httpexpect/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/hiago-balbino/web-crawler/internal/core/crawler"
-	"github.com/hiago-balbino/web-crawler/test/mocks"
+	core "github.com/hiago-balbino/web-crawler/v2/internal/core/crawler"
+	"github.com/hiago-balbino/web-crawler/v2/test/mocks"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -124,7 +124,7 @@ func TestIndex(t *testing.T) {
 	})
 }
 
-func setupHandler(service crawler.CrawlerUsecase) *gin.Engine {
+func setupHandler(service core.CrawlerUsecase) *gin.Engine {
 	handler := NewHandler(service)
 	server := Server{handler: handler}
 	router := server.setupRoutes("../../web/templates/*")

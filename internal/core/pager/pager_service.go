@@ -3,7 +3,7 @@ package pager
 import (
 	"net/http"
 
-	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
+	"github.com/hiago-balbino/web-crawler/v2/internal/pkg/logger"
 	"golang.org/x/net/html"
 )
 

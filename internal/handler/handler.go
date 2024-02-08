@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	core "github.com/hiago-balbino/web-crawler/internal/core/crawler"
-	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
+	core "github.com/hiago-balbino/web-crawler/v2/internal/core/crawler"
+	"github.com/hiago-balbino/web-crawler/v2/internal/pkg/logger"
 )
 
 type Handler struct {

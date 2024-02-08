@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hiago-balbino/web-crawler/internal/core/pager"
-	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
-	"github.com/hiago-balbino/web-crawler/internal/pkg/metrics"
+	"github.com/hiago-balbino/web-crawler/v2/internal/core/pager"
+	"github.com/hiago-balbino/web-crawler/v2/internal/pkg/logger"
+	"github.com/hiago-balbino/web-crawler/v2/internal/pkg/metrics"
 	"golang.org/x/net/html"
 )
 

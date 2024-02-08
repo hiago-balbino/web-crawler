@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
+	"github.com/hiago-balbino/web-crawler/v2/internal/pkg/logger"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

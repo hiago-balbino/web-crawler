@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hiago-balbino/web-crawler/config"
-	"github.com/hiago-balbino/web-crawler/internal/core/crawler"
-	"github.com/hiago-balbino/web-crawler/internal/core/pager"
-	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
-	"github.com/hiago-balbino/web-crawler/internal/repository/storage"
+	"github.com/hiago-balbino/web-crawler/v2/config"
+	"github.com/hiago-balbino/web-crawler/v2/internal/core/crawler"
+	"github.com/hiago-balbino/web-crawler/v2/internal/core/pager"
+	"github.com/hiago-balbino/web-crawler/v2/internal/pkg/logger"
+	"github.com/hiago-balbino/web-crawler/v2/internal/repository/storage"
 	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/spf13/viper"
 )

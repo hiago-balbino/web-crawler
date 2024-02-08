@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/hiago-balbino/web-crawler/test/mocks"
+	"github.com/hiago-balbino/web-crawler/v2/test/mocks"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/html"
 )

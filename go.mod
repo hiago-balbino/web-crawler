@@ -1,4 +1,4 @@
-module github.com/hiago-balbino/web-crawler
+module github.com/hiago-balbino/web-crawler/v2
 
 go 1.22
 
