@@ -10,8 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 var log = logger.GetLogger()
@@ -33,7 +31,7 @@ func NewCrawlerMongodbRepository(ctx context.Context) CrawlerMongodbRepository {
 	opts := options.Client().ApplyURI(endpoint)
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
-		log.Error("error connecting to mongodb", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		log.Error("error connecting to mongodb", logger.FieldError(err))
 	}
 
 	return CrawlerMongodbRepository{client}
@@ -51,7 +49,7 @@ func (c CrawlerMongodbRepository) Insert(ctx context.Context, uri string, depth 
 	}
 	_, err := c.getCollection().InsertOne(ctx, pageDataInfo)
 	if err != nil {
-		log.Error("error while inserting new data into collection", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		log.Error("error while inserting new data into collection", logger.FieldError(err))
 
 		return err
 	}
@@ -64,7 +62,7 @@ func (c CrawlerMongodbRepository) Find(ctx context.Context, uri string, depth ui
 	pageDataInfo := pageDataInfo{}
 	err := c.getCollection().FindOne(ctx, filter).Decode(&pageDataInfo)
 	if err != nil {
-		log.Error("error while fetching data from collection", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		log.Error("error while fetching data from collection", logger.FieldError(err))
 
 		return nil, err
 	}

@@ -9,8 +9,6 @@ import (
 	"github.com/hiago-balbino/web-crawler/internal/core/pager"
 	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
 	"github.com/hiago-balbino/web-crawler/internal/pkg/metrics"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"golang.org/x/net/html"
 )
 
@@ -64,7 +62,7 @@ func (p CrawlerService) Craw(ctx context.Context, uri string, depth uint) ([]str
 	for fetching := uint(1); fetching <= depth; fetching++ {
 		linkAddress := <-ch
 		if linkAddress.err != nil {
-			log.Error("error to get uri node", zap.Field{Type: zapcore.StringType, String: linkAddress.err.Error()})
+			log.Error("error to get uri node", logger.FieldError(linkAddress.err))
 			metrics.LinksErrorCounter.Inc()
 
 			return nil, linkAddress.err
@@ -93,7 +91,7 @@ func (p CrawlerService) Craw(ctx context.Context, uri string, depth uint) ([]str
 	}()
 
 	if err := p.database.Insert(ctx, uri, depth, links); err != nil {
-		log.Error("error inserting data into database", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		log.Error("error inserting data into database", logger.FieldError(err))
 	}
 
 	return links, nil

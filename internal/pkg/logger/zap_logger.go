@@ -37,6 +37,10 @@ func GetLogger() *zap.Logger {
 	return Logger
 }
 
+func FieldError(err error) zapcore.Field {
+	return zapcore.Field{Type: zapcore.StringType, String: err.Error()}
+}
+
 func getLogLevel() zapcore.Level {
 	logLevel := viper.GetString("LOG_LEVEL")
 

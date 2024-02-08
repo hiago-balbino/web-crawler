@@ -4,8 +4,6 @@ import (
 	"net/http"
 
 	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"golang.org/x/net/html"
 )
 
@@ -27,14 +25,14 @@ func (c PagerService) GetNode(uri string) (*html.Node, error) {
 		}
 	}()
 	if err != nil {
-		log.Error("error to perform get request in provider", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		log.Error("error to perform get request in provider", logger.FieldError(err))
 
 		return nil, err
 	}
 
 	node, err := html.Parse(response.Body)
 	if err != nil {
-		log.Error("error to parse response body to html", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		log.Error("error to parse response body to html", logger.FieldError(err))
 
 		return nil, err
 	}
