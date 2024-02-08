@@ -21,6 +21,7 @@ Some tools used do not represent the best choice, they were only used for learni
 * [Golangci-lint](https://golangci-lint.run)
 * [Godoc](https://pkg.go.dev/golang.org/x/tools/cmd/godoc)
 * [Govulncheck](https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck)
+* [Deadcode](https://go.dev/blog/deadcode)
 * [Viper](https://github.com/spf13/viper)
     * Configuration solution
 * [Cobra](https://github.com/spf13/cobra)
@@ -44,27 +45,6 @@ You can run the command below to see all the useful commands available and your 
 ```
 make help
 ```
-```
-help: show this help.
-setup: run the command mod download and tidy from Go
-vet: run the command vet from Go
-tests: run all unit tests
-integration-tests: run all integration tests
-all-tests: run all unit and integration tests
-cover: run the command tool cover to open coverage file as HTML
-lint: run all linters configured
-sonarqube-up: start sonarqube container
-sonarqube-down: stop sonarqube container
-sonarqube-analysis: run sonar scanner
-fmt: run go formatter recursively on all files
-compose-ps: list all containers running
-compose-up: start API and dependencies
-compose-down: stop API and dependencies
-build: create an executable of the application
-build-run-api: build project and run the API using the built binary
-clean: run the go clean command and removes the application binary
-doc: run the project documentation using HTTP
- ```
 
 ## ⚙️ Running the Application
 To run the project locally you need to export some environment variables and this can be done using `direnv`. You can export the variables below.
@@ -93,7 +73,7 @@ If you want to run the API outside of Docker:
       - ${MONGODB_PORT}:${MONGODB_PORT}
     ```
 * comment out the `api` and `nginx` service in `docker-compose.yml` and run `make compose-up` and then `make build-run-api`, the API will run on the default port `http://localhost:8888/index`
-* if you want to debug the API, you don't need to run `make build-run-api` and in your IDE you need to set the command to `api` as the application is using [cobra library](https://github.com/spf13/cobra)
+* if you want to debug the API, you don't need to run `make build-run-api`, but in your IDE you need to set the command to `api` when starting the application given its using [cobra library](https://github.com/spf13/cobra)
 
 ## 🏁 How to crawl the page
 Fill in the URI and Depth in the form(it will be used to limit the depth when fetching pages with so many links that they can underperform and can take so long).
@@ -129,7 +109,11 @@ GRAFANA_PORT='3000'
 
 The application metrics are exposed using the [ginmetrics library](https://github.com/penglongli/gin-metrics) and can be accessed at `http://localhost:8888/metrics`. These exposed metrics are collected by Prometheus and can be accessed at `http://localhost:9090`. 
 
-The collected metrics are sent to Grafana and can be accessed at `http://localhost:3000`. The default credentials are `admin`/`admin`(Grafana may prompt you to reset the password, but it is optional). After that, you need to configure the `data source` by clicking on the `Configuration` option in the left hand panel and then clicking on `Data source`. Click on the `Add Data Source` button and select `Prometeus` under `Time Series Database`. Fill in the address in the HTTP option as in the image below:
+The collected metrics are sent to Grafana and can be accessed at `http://localhost:3000`. The default credentials are `admin`/`admin`(Grafana may prompt you to reset the password, but it is optional). 
+
+_Please note that due to some changes to the tools, the arrangement of items may be different._
+
+After that, you need to configure the `data source` by clicking on the `Configuration` option in the left hand panel and then clicking on `Data source`. Click on the `Add Data Source` button and select `Prometeus` under `Time Series Database`. Fill in the address in the HTTP option as in the image below:
 
 [![datasource](/metrics/assets/datasource.png)](/metrics/assets/datasource.png)
 
