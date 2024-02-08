@@ -17,7 +17,7 @@ services:
       dockerfile: build/Dockerfile_base
     container_name: crawler-api
     command:
-      - ./crawler
+      - ./crawler_app
       - api
     environment:
       LOG_LEVEL: ${LOG_LEVEL}
@@ -57,7 +57,7 @@ services:
     ports:
       - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
     volumes:
-      - /metrics/prometheus:/etc/prometheus
+      - ../metrics/prometheus:/etc/prometheus
       - prometheus-data:/metrics/prometheus
     command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
 

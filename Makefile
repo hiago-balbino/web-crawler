@@ -1,6 +1,6 @@
 .PHONY: all help setup vet lint deadcode vulncheck tests integration-tests all-tests cover sonarqube-up sonarqube-down sonarqube-analysis fmt compose-ps compose-up compose-down build build-run-api clean doc
 
-APP_NAME=crawler
+APP_NAME=crawler_app
 
 ## help: show this help.
 help:
@@ -62,15 +62,15 @@ fmt:
 
 ## compose-ps: list all containers running
 compose-ps:
-	docker-compose -f build/docker-compose.yml ps
+	docker compose -f build/docker-compose.yml ps
 
 ## compose-up: start API and dependencies
 compose-up:
-	docker-compose -f build/docker-compose.yml up -d
+	docker compose -f build/docker-compose.yml up -d
 
 ## compose-down: stop API and dependencies
 compose-down:
-	docker-compose -f build/docker-compose.yml down
+	docker compose -f build/docker-compose.yml down
 
 ## build: create an executable of the application
 build:
