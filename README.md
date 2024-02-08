@@ -78,6 +78,8 @@ If you want to run the API outside of Docker:
 ## 🏁 How to crawl the page
 Fill in the URI and Depth in the form(it will be used to limit the depth when fetching pages with so many links that they can underperform and can take so long).
 
+_By default, the HTTP request takes a timeout of 60 seconds which can be changed by environment variable(API_REQUEST_TIMEOUT)._
+
 ## 📜 Running Internal Documentation
 You can do this by running the `make doc` command and going to the address `http://localhost:6060`.
 

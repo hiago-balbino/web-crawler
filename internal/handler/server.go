@@ -23,7 +23,7 @@ type Server struct {
 
 func NewServer() Server {
 	config.InitConfigurations()
-	pagerService := pager.NewPagerService(new(http.Client))
+	pagerService := pager.NewPagerService(&http.Client{Timeout: viper.GetDuration("API_REQUEST_TIMEOUT")})
 	crawlerDatabase := storage.NewCrawlerMongodbRepository(context.Background())
 	crawlerService := crawler.NewCrawlerService(pagerService, crawlerDatabase)
 	handler := NewHandler(crawlerService)
