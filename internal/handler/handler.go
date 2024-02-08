@@ -5,8 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	core "github.com/hiago-balbino/web-crawler/internal/core/crawler"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"github.com/hiago-balbino/web-crawler/internal/pkg/logger"
 )
 
 type Handler struct {
@@ -20,14 +19,14 @@ func NewHandler(service core.CrawlerUsecase) Handler {
 func (h Handler) getPageCrawled(c *gin.Context) {
 	var crawPageInfo crawPageInfo
 	if err := c.BindQuery(&crawPageInfo); err != nil {
-		log.Error("error binding query params", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		log.Error("error binding query params", logger.FieldError(err))
 		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 
 		return
 	}
 
 	if err := crawPageInfo.validate(); err != nil {
-		log.Error("error validating parameters", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		log.Error("error validating parameters", logger.FieldError(err))
 		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 
 		return
@@ -35,7 +34,7 @@ func (h Handler) getPageCrawled(c *gin.Context) {
 
 	links, err := h.service.Craw(c.Request.Context(), crawPageInfo.URI, crawPageInfo.Depth)
 	if err != nil {
-		log.Error("error crawling page", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		log.Error("error crawling page", logger.FieldError(err))
 		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": err.Error()})
 
 		return

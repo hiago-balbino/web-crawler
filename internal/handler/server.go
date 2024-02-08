@@ -13,8 +13,6 @@ import (
 	"github.com/hiago-balbino/web-crawler/internal/repository/storage"
 	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 var log = logger.GetLogger()
@@ -41,7 +39,7 @@ func (s Server) Start() {
 	monitor.Use(router)
 
 	if err := router.Run(fmt.Sprintf(":%s", viper.GetString("API_PORT"))); err != nil {
-		log.Fatal("error while server starting", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		log.Fatal("error while server starting", logger.FieldError(err))
 	}
 }
 
